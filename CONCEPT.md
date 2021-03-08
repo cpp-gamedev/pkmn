@@ -91,15 +91,10 @@ parameters should be taken into account:
 
 ---
 
-## Coding Conventions
-
-This code base will have a pre-made `.clang-format` to take care of most formatting
-issues automatically. Use `snake_case` for function and variable names, and `CamelCase` for classes, structs, and so on.
-
 ## System Requirements
 
 The game will be developed with os-independent dependencies in C++17. For starters
-work without any external dependencies. This is not a hard rule, any may change in
+work without any external dependencies. This is not a hard rule, and may change in
 the future if deemed necessary.
 
 ## References
