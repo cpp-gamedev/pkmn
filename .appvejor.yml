@@ -1,0 +1,33 @@
+version: "1.0.0-{build}"
+environment:
+  global:
+    APP_VERSION: "1.0.0"
+  matrix:
+    - job_name: Windows x64
+      appveyor_build_worker_image: Visual Studio 2019
+    - job_name: Linux x64
+      appveyor_build_worker_image: Ubuntu
+configuration:
+  - Release
+before_build:
+  - cmd: cmake -G "Visual Studio 16 2019" . -B out
+  - sh: cmake -G Ninja . -B out -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=$CONFIGURATION || exit 1
+for:
+  - matrix:
+      only:
+        - job_name: Windows x64
+    build:
+      project: out/cpp-template.sln
+      parallel: true
+      verbosity: minimal
+  - matrix:
+      only:
+        - job_name: Linux x64
+    build_script:
+      - sh: echo "== Building Linux $CONFIGURATION $APP_VERSION ==" && ninja -v -C out || exit 1
+test_script: |
+  cd out
+  ctest || exit 1
+matrix:
+  fast_finish: true
+skip_branch_with_pr: true
