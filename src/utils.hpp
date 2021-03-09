@@ -9,7 +9,7 @@ std::vector<T> range(T min, T max)
 {
 	// create a vector equivalent to the set {min, min+1, ..., max}
 	std::vector<T> r(round(max + 1 - min));
-	std::generate(r.begin(), r.end(), [n = min]() mutable { return n++; });
+	std::generate(r.begin(), r.end(), [n = min]() mutable { return ++n; });
 	return r;
 }
 
@@ -61,3 +61,18 @@ T get_user_input(std::string prompt)
 }
 
 void clear_screen();
+
+void sleep(int ms);
+
+enum class Color
+{
+	RED,
+	GREEN,
+	YELLOW,
+	BLUE,
+	MAGENTA,
+	CYAN,
+	WHITE
+};
+
+std::string color(std::string text, Color color);
