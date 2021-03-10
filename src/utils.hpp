@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <random>
 #include <type_traits>
 #include <vector>
@@ -66,6 +67,7 @@ void sleep(int ms);
 
 enum class Color
 {
+	BLACK,
 	RED,
 	GREEN,
 	YELLOW,
@@ -75,4 +77,4 @@ enum class Color
 	WHITE
 };
 
-std::string color(std::string text, Color color);
+std::string style(std::string text, Color fore, Color back = Color::BLACK);

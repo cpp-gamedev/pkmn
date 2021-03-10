@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <thread>
 
 void clear_screen()
@@ -16,6 +17,7 @@ void sleep(int ms)
 
 enum class Color
 {
+	BLACK = 0,
 	RED = 1,
 	GREEN = 2,
 	YELLOW = 3,
@@ -25,10 +27,15 @@ enum class Color
 	WHITE = 7
 };
 
-std::string color(std::string text, Color color)
+std::string style(std::string text, Color fore, Color back = Color::BLACK)
 {
-	// modify fore ground color of text
-	std::string code = "\x1B[3?m";
-	code.replace(code.find('?'), 1, std::to_string(static_cast<int>(color)+1));
-	return code + text + "\033[0m";
+	// add fore and background ground color to text
+	std::stringstream ansi_text;
+	ansi_text << "\x1B[3" << static_cast<int>(fore) << 'm';
+	if (back != Color::BLACK)
+	{
+		ansi_text << "\x1B[4" << static_cast<int>(back) << 'm';
+	}
+	ansi_text << text << "\033[0m";
+	return ansi_text.str();
 }
