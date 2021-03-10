@@ -9,7 +9,7 @@ std::vector<std::string> gen_healthbar(std::string name, int level, int hp, int 
 {
    /*
 	* Bulbasaur :L30	// label
-	* HP [**********]	// progressbar 10+2+2+1=15
+	* HP [********* ]	// progressbar
 	*         58 / 60	// hitpoints
 	*/
 	std::string label = kt::format_str("{} :L{}\n", name, level);
@@ -23,7 +23,7 @@ std::vector<std::string> gen_healthbar(std::string name, int level, int hp, int 
 	std::string progressbar = kt::format_str("HP [{}]\n", style(stars, Color::GREEN));
 
 	std::string hitpoints = kt::format_str("{} / {}\n", hp, max_hp);
-	hitpoints = std::string(15 - hitpoints.length(), ' ').append(hitpoints);
+	hitpoints = std::string(16 - hitpoints.length(), ' ').append(hitpoints);
 
 	std::vector<std::string> healthbar{label, progressbar, hitpoints};
 
