@@ -25,7 +25,5 @@ std::vector<std::string> gen_healthbar(std::string name, int level, int hp, int 
 	std::string hitpoints = kt::format_str("{} / {}\n", hp, max_hp);
 	hitpoints = std::string(16 - hitpoints.length(), ' ').append(hitpoints);
 
-	std::vector<std::string> healthbar{label, progressbar, hitpoints};
-
-	return healthbar;
+	return {label, progressbar, hitpoints};
 }

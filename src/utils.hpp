@@ -6,21 +6,6 @@
 #include <vector>
 
 template <typename T>
-std::vector<T> range(T min, T max)
-{
-	// create a vector equivalent to the set {min, min+1, ..., max}
-	std::vector<T> r(round(max + 1 - min));
-	std::generate(r.begin(), r.end(), [n = min]() mutable { return ++n; });
-	return r;
-}
-
-template <typename T>
-std::vector<T> range(T max)
-{
-	return range(0, max);
-}
-
-template <typename T>
 T random_range(T min, T max)
 {
 	// in range of [min, max]

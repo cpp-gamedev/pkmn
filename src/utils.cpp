@@ -2,8 +2,9 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <thread>
+
+#include "str_format.hpp"
 
 void clear_screen()
 {
@@ -30,12 +31,12 @@ enum class Color
 std::string style(std::string text, Color fore, Color back = Color::BLACK)
 {
 	// add fore and background ground color to text
-	std::stringstream ansi_text;
-	ansi_text << "\x1B[3" << static_cast<int>(fore) << 'm';
+	std::string ansi_text = kt::format_str("\x1B[3{}m", static_cast<int>(fore));
+
 	if (back != Color::BLACK)
 	{
-		ansi_text << "\x1B[4" << static_cast<int>(back) << 'm';
+		ansi_text.append(kt::format_str("\x1B[4{}m", static_cast<int>(back)));
 	}
-	ansi_text << text << "\033[0m";
-	return ansi_text.str();
+
+	return ansi_text.append(kt::format_str("{}\033[0m", text));
 }
