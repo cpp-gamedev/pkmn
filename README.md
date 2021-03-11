@@ -7,9 +7,6 @@
     <a href="https://ci.appveyor.com/project/hentai-chan/pkmn" alt="CI" title="CI">
         <img src="https://ci.appveyor.com/api/projects/status/vcffeyqccc4pvi4d?branch=integration&passingText=integration%20-%20OK&svg=true">
     </a>
-    <a href="https://ci.appveyor.com/project/hentai-chan/pkmn" alt="CI" title="CI">
-        <img src="https://ci.appveyor.com/api/projects/status/vcffeyqccc4pvi4d?branch=ui&passingText=ui%20-%20OK&svg=true">
-    </a>
     <a alt="C++ Standard Version" title="C++ Standard Version">
         <img src="https://img.shields.io/badge/Standard-C++17-blue">
     </a>
@@ -23,7 +20,15 @@
 
 ## Build & Debug
 
-### On Visual Studio
+### Generating new Pokemon
+
+TODO
+
+### On Visual Studio (Windows)
 
 Navigate to `Project` and select `Generate Cache for pkmn`. Set `Current Document (main.cpp)`
 to start debugging this project (`F5`).
+
+### On Visual Studio Code (Linux)
+
+TODO
