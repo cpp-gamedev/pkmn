@@ -1,7 +1,7 @@
 #include "models.hpp"
+#include <iostream>
 #include <vector>
 #include "utils.hpp"
-#include < iostream>
 
 struct Move
 {
