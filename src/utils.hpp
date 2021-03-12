@@ -63,3 +63,4 @@ enum class Color
 };
 
 std::string style(std::string text, Color fore, Color back = Color::BLACK);
+int random_range(int min, int max);

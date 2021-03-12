@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
-
+#include <random>
 #include "str_format.hpp"
 
 void clear_screen()
@@ -39,4 +39,12 @@ std::string style(std::string text, Color fore, Color back = Color::BLACK)
 	}
 
 	return ansi_text.append(kt::format_str("{}\033[0m", text));
+}
+
+int random_range(int min, int max)
+{
+	// randomInteger in [min, max]
+	static std::default_random_engine eng{std::random_device{}()};
+	std::uniform_int_distribution<int> dist(min, max);
+	return dist(eng);
 }
