@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <random>
 #include <type_traits>
 #include <vector>
@@ -28,6 +29,15 @@ T random_choice(const std::vector<T>& vector)
 }
 
 template <typename T>
+std::vector<T> random_choices(const std::vector<T>& vector, T k)
+{
+	// select k random values in vector
+	std::vector<T> choices(k);
+	std::generate(choices.begin(), choices.end(), [&]() { return random_choice(vector); });
+	return choices;
+}
+
+template <typename T>
 T get_user_input(std::string prompt)
 {
 	std::cout << prompt;
@@ -37,3 +47,19 @@ T get_user_input(std::string prompt)
 }
 
 void clear_screen();
+
+void sleep(int ms);
+
+enum class Color
+{
+	BLACK,
+	RED,
+	GREEN,
+	YELLOW,
+	BLUE,
+	MAGENTA,
+	CYAN,
+	WHITE
+};
+
+std::string style(std::string text, Color fore, Color back = Color::BLACK);
