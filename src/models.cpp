@@ -3,13 +3,11 @@
 #include <vector>
 #include "utils.hpp"
 
-Move::Move(std::string move_name, MoveTypes mt, float accuracy, int power)
+Move::Move(std::string move_name, const MoveTypes mt, const float accuracy, const int power)
+	: m_move_name(std::move(move_name)), m_mt(mt), m_accuracy(accuracy), m_power(power)
 {
-	m_move_name = move_name;
-	m_mt = mt;
-	m_accuracy = accuracy;
-	m_power = power;
 }
+
 Pokemon::Pokemon(std::string name, const std::int32_t level, const std::int32_t def, const std::int32_t attack, const Move next_move)
 	: m_name(std::move(name)), m_level(level), m_hp(2 * m_level * random_range<float>(0.8, 1.2)), m_def(def), m_attack(attack), m_next_move(next_move)
 {
@@ -23,14 +21,12 @@ Move Pokemon::make_move(Pokemon& source, Pokemon& target)
 		{
 		case MoveTypes::ATTACK:
 			return attack(source, target);
-			break;
 		case MoveTypes::DEFEND:
 			return defend(source);
-			break;
 
 		case MoveTypes::HEAL:
 			return heal(source);
-			break;
+
 		case MoveTypes::NONE:
 			return source.m_next_move;
 		}
@@ -62,7 +58,7 @@ Move Pokemon::attack(Pokemon& source, Pokemon& target)
 Move Pokemon::defend(Pokemon& source)
 {
 
-	int defense_increase = source.m_next_move.m_power * random_range<int>(source.m_def * 0.2, source.m_def * 0.8);
+	int defense_increase = source.m_next_move.m_power * random_range<float>(0.1, 0.3);
 	source.m_def += defense_increase;
 	return source.m_next_move;
 };

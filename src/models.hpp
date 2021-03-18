@@ -18,6 +18,7 @@ struct Move
 	MoveTypes m_mt;
 	float m_accuracy;
 	int m_power;
+	Move() = default;
 	Move(std::string move_name, MoveTypes mt, float accuracy, int power);
 };
 
