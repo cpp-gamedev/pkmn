@@ -51,6 +51,10 @@ Move Pokemon::attack(Pokemon& source, Pokemon& target)
 		}
 		int damage = ((((((2 * source.m_level / 5 + 2) * attack * source.m_next_move.m_power) / target.m_def) / 50) + 2) * random_range<int>(217, 255)) / 255;
 		target.m_hp -= damage;
+		if (target.m_hp <= 0)
+		{
+			target.isAlive = false;
+		}
 		return source.m_next_move;
 	}
 	return Move("Failed", MoveTypes::NONE, 100, 0);
