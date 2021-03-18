@@ -14,7 +14,7 @@ Pokemon::Pokemon(std::string name, const std::int32_t level, const std::int32_t 
 
 Move Pokemon::make_move(Pokemon& source, Pokemon& target)
 {
-	if ((random_range<int>(0, 100) <= source.m_next_move.m_accuracy) && source.isAlive && target.isAlive)
+	if ((random_range<int>(0, 100) <= source.m_next_move.m_accuracy) && source.m_hp > 0 && target.m_hp > 0)
 	{
 		switch (source.m_next_move.m_mt)
 		{
@@ -30,14 +30,13 @@ Move Pokemon::make_move(Pokemon& source, Pokemon& target)
 			return source.m_next_move;
 		}
 	}
-	Move fail = Move("Failed", MoveTypes::NONE, 100, 0);
-	return fail;
+
+	return Move("Failed", MoveTypes::NONE, 100, 0);
 }
 
 Move Pokemon::attack(Pokemon& source, Pokemon& target)
 {
-	/* (2 * Level / 5+2) * Attack * Power) / Defense) / 50) + 2) * random number(217-255)) / 255
-			damage formula https://www.math.miami.edu/~jam/azure/compendium/battdam.htm*/
+
 	if (target.m_hp > 0)
 	{
 		int attack = source.m_attack;
@@ -45,12 +44,11 @@ Move Pokemon::attack(Pokemon& source, Pokemon& target)
 		{
 			attack *= 2; // crit damage
 		}
+		/* (2 * Level / 5+2) * Attack * Power) / Defense) / 50) + 2) * random number(217-255)) / 255
+			damage formula https://www.math.miami.edu/~jam/azure/compendium/battdam.htm*/
 		int damage = ((((((2 * source.m_level / 5 + 2) * attack * source.m_next_move.m_power) / target.m_def) / 50) + 2) * random_range<int>(217, 255)) / 255;
 		target.m_hp -= damage;
-		if (target.m_hp <= 0)
-		{
-			target.isAlive = false;
-		}
+
 		return source.m_next_move;
 	}
 	return Move("Failed", MoveTypes::NONE, 100, 0);

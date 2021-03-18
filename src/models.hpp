@@ -7,7 +7,7 @@
 enum class MoveTypes
 {
 	NONE,	// move failed or wasn't initialized
-	ATTACK, // deals damange
+	ATTACK, // deals damage
 	DEFEND, // increase pokemon defense
 	HEAL,	// Increase pokemon health or remove status effects
 };
@@ -31,7 +31,6 @@ struct Pokemon
 	std::int32_t m_max_hp = m_hp;
 	std::int32_t m_def{};
 	std::int32_t m_attack{};
-	bool isAlive = true;
 
 	std::vector<Move> m_moveset;
 	Move m_next_move = Move("None", MoveTypes::NONE, 100, 0);
