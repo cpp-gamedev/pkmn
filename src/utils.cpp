@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <random>
 #include <string>
 #include <thread>
-
 #include "str_format.hpp"
 
 void clear_screen()
