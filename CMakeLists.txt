@@ -8,6 +8,7 @@ set(APP_VERSION "1.0.0" CACHE STRING "Application Version" FORCE)
 project(pkmn VERSION ${APP_VERSION})
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.*pp")
+message("sources: ${SOURCES}")
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 if(W_MSBUILD)

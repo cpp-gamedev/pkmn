@@ -3,97 +3,76 @@
 #include <vector>
 #include "utils.hpp"
 
-struct Move
+Move::Move(std::string move_name, MoveTypes mt, float accuracy, int power)
 {
-	std::string move_name;
-	Status status_effect;
-	float accuracy;
-	Move_types mt;
+	m_move_name = move_name;
+	m_mt = mt;
+	m_accuracy = accuracy;
+	m_power = power;
+}
+Pokemon::Pokemon(std::string name, const std::int32_t level, const std::int32_t def, const std::int32_t attack, const Move next_move)
+	: m_name(std::move(name)), m_level(level), m_hp(2 * m_level * random_range<float>(0.8, 1.2)), m_def(def), m_attack(attack), m_next_move(next_move)
+{
+}
+
+Move Pokemon::make_move(Pokemon& source, Pokemon& target)
+{
+	if ((random_range<int>(0, 100) <= source.m_next_move.m_accuracy) && source.isAlive && target.isAlive)
+	{
+		switch (source.m_next_move.m_mt)
+		{
+		case MoveTypes::ATTACK:
+			return attack(source, target);
+			break;
+		case MoveTypes::DEFEND:
+			return defend(source);
+			break;
+
+		case MoveTypes::HEAL:
+			return heal(source);
+			break;
+		case MoveTypes::NONE:
+			return source.m_next_move;
+		}
+	}
+	Move fail = Move("Failed", MoveTypes::NONE, 100, 0);
+	return fail;
 };
-
-struct Pokemon
+Move Pokemon::attack(Pokemon& source, Pokemon& target)
 {
-	std::string Name;
-	int level;
-	int hp = 2 * level * random_range(0.8, 1.2);
-	int def;
-	int attack;
-	Status status = Status::None;
-	std::vector<Move> moveset;
-	Move next_move;
-	void display_stats()
+	/* (2Level/5+2)*Attack*Power)/Defense)/50)+2)*random number(217-255))/255
+			damage formula https://www.math.miami.edu/~jam/azure/compendium/battdam.htm*/
+	if (target.m_hp > 0)
 	{
-		std::cout << "Name: " << this->Name << std::endl;
-		std::cout << "Level: " << this->level << std::endl;
-		std::cout << "Health: " << this->hp << std::endl;
-		std::cout << "Defense: " << this->def << std::endl;
-		std::cout << "Attack: " << this->attack << std::endl;
-		for (auto mv : moveset)
+		int attack = source.m_attack;
+		if (random_range<int>(random_range<int>(1, 20), 100))
 		{
-			std::cout << mv.move_name << std::endl;
+			attack *= 2; // crit damage
 		}
+		int damage = ((((((2 * source.m_level / 5 + 2) * attack * source.m_next_move.m_power) / target.m_def) / 50) + 2) * random_range<int>(217, 255)) / 255;
+		target.m_hp -= damage;
+		return source.m_next_move;
 	}
-	void select_move()
+	return Move("Failed", MoveTypes::NONE, 100, 0);
+};
+Move Pokemon::defend(Pokemon& source)
+{
+
+	int defense_increase = source.m_next_move.m_power * random_range<int>(source.m_def * 0.2, source.m_def * 0.8);
+	source.m_def += defense_increase;
+	return source.m_next_move;
+};
+Move Pokemon::heal(Pokemon& source)
+{
+
+	int health_increase = source.m_next_move.m_power * random_range<float>(0.1, 0.5);
+	if (source.m_hp + health_increase > source.m_max_hp)
 	{
-		int move_number;
-		std::cout << "1. display stats\n";
-
-		for (int i = 0; i < moveset.size(); ++i)
-		{
-			std::cout << i + 2 << moveset[i].move_name << '\n';
-		}
-		std::cin >> move_number;
-		if (move_number == 1)
-		{
-			display_stats();
-		}
-		else
-		{
-			this->next_move = moveset[move_number - 2];
-		}
+		source.m_hp = source.m_max_hp;
 	}
-	void makeMove(Pokemon* source, Pokemon* target, Move move)
+	else
 	{
-		int success = (random_range(0, move.accuracy) <= move.accuracy);
-		switch (move.mt)
-		{
-		case Move_types::Attack:
-
-			if (target->hp > 0 && success)
-			{
-
-				int damage = source->attack * source->level / target->def;
-				target->hp -= damage;
-				if ((random_range(0, move.accuracy) <= move.accuracy))
-				{
-					target->status = move.status_effect;
-				}
-				std::cout << source->Name << " Inflicted " << damage << " damage to " << target->Name << " with " << move.move_name << std::endl;
-			}
-			else
-			{
-				std::cout << "Attack failed\n";
-			}
-			break;
-		case Move_types::Defend:
-			target = source;
-			if (success)
-			{
-				int defense_increase = source->level * random_range(target->def * 0.2, target->def * 0.8);
-				target->def += defense_increase;
-				std::cout << "Defense increased by " << defense_increase << ". Total defense is: " << target->def << std::endl;
-			}
-			break;
-
-		case Move_types::Heal:
-			target = source;
-			if (success)
-			{
-				int health_increase = source->level * random_range(target->hp * 0.1, target->hp * 0.5);
-				target->hp += health_increase;
-				std::cout << "Health increased by " << health_increase << ". Total Health is: " << target->hp << std::endl;
-			}
-			break;
-		}
+		source.m_hp += health_increase;
 	}
+	return source.m_next_move;
 };
