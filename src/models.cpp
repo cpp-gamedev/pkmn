@@ -1,5 +1,4 @@
 #include "models.hpp"
-#include <iostream>
 #include <vector>
 #include "utils.hpp"
 
@@ -33,10 +32,11 @@ Move Pokemon::make_move(Pokemon& source, Pokemon& target)
 	}
 	Move fail = Move("Failed", MoveTypes::NONE, 100, 0);
 	return fail;
-};
+}
+
 Move Pokemon::attack(Pokemon& source, Pokemon& target)
 {
-	/* (2Level/5+2)*Attack*Power)/Defense)/50)+2)*random number(217-255))/255
+	/* (2 * Level / 5+2) * Attack * Power) / Defense) / 50) + 2) * random number(217-255)) / 255
 			damage formula https://www.math.miami.edu/~jam/azure/compendium/battdam.htm*/
 	if (target.m_hp > 0)
 	{
@@ -54,14 +54,16 @@ Move Pokemon::attack(Pokemon& source, Pokemon& target)
 		return source.m_next_move;
 	}
 	return Move("Failed", MoveTypes::NONE, 100, 0);
-};
+}
+
 Move Pokemon::defend(Pokemon& source)
 {
 
 	int defense_increase = source.m_next_move.m_power * random_range<float>(0.1, 0.3);
 	source.m_def += defense_increase;
 	return source.m_next_move;
-};
+}
+
 Move Pokemon::heal(Pokemon& source)
 {
 
@@ -75,4 +77,4 @@ Move Pokemon::heal(Pokemon& source)
 		source.m_hp += health_increase;
 	}
 	return source.m_next_move;
-};
+}
