@@ -13,6 +13,9 @@
     <a alt="CMake Version" title="CMake Version">
         <img src="https://img.shields.io/badge/CMake-3.18+-blue">
     </a>
+    <a alt="Python Version" title="Python Version">
+        <img src="https://img.shields.io/badge/Python-3.8%20|%203.9-blue">
+    </a>
     <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" alt="License" title="License">
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg">
     </a>
@@ -22,7 +25,34 @@
 
 ### Generating new Pokemon
 
-TODO
+If this is your first time using a python script, use
+
+```bash
+$ python -m venv venv/
+$ source venv/Scripts/activate
+$ pip install -r requirements.txt
+```
+
+to install the dependencies in a virtual environment. Note that this script
+assumes that it is being run from the project's root directory. After that
+you should be able to use this script:
+
+```bash
+$ # creates a new JSON file in assets/
+$ python gen_data.py make --id 1
+$ # creates a new ascii image as txt file in assets/
+$ python gen_data.py ascii --id 1
+```
+
+You can also use the `--name` option for identifying a new pokemon. Repeat both
+steps - you need at least two pokemon to play this game. In case of doubt, use
+
+```bash
+$ python gen_data.py --help
+```
+
+to get more help. Once you've obtained these files, build the project to play
+this game.
 
 ### On Visual Studio (Windows)
 
