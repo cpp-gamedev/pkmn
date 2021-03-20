@@ -19,29 +19,60 @@ ascii image. In both instances, a ID may be used as primary argument instead.
 import json
 from pathlib import Path
 from random import randint, random
+from typing import List
 from urllib.parse import urljoin
 
 import click
+import colorama
 import requests
 from click import style
+from colorama import Fore, Style
+from PIL import Image, ImageOps
 from rich.console import Console
 from rich.progress import track
-from PIL import Image
 
 #region Image Processing
 
-def resize_image(img: Image, new_width=15) -> Image:
+CHARS = [' ', '.', 'o', 'v', '@', '#', 'W']
+
+def resize_image(img: Image, new_width=20) -> Image:
     width, height = img.size
     aspect_ratio = height / float(width)
-    new_height = int(aspect_ratio * new_width)
-    return img.resize((new_width, new_height))
+    return img.resize((new_width, int(aspect_ratio * new_width)), Image.BILINEAR)
 
-def img2ascii(img: Image, width=15) -> str:
-    # add grey filter
-    img = img.convert('L')
-    img = resize_image(img, new_width=width)
-    # convert pixels to chars
-    img_pixels = list(img.get_data())
+def detect_color(c: str, r:int, g:int, b:int) -> str:
+    # thresholds were determined experimentally
+    if sum([r, g, b]) > 550:
+        return ''.join((Fore.WHITE, c, Style.RESET_ALL))
+    elif r + g > 250 and b < 100:
+        return ''.join((Fore.YELLOW, c, Style.RESET_ALL))
+    elif r + b > 250 and g < 100:
+        return ''.join((Fore.MAGENTA, c, Style.RESET_ALL))
+    elif g + b > 250 and r < 100:
+        return ''.join((Fore.CYAN, c, Style.RESET_ALL))
+    elif max(r, g, b) == r:
+        return ''.join((Fore.RED, c, Style.RESET_ALL))
+    elif max(r, g, b) == g:
+        return ''.join((Fore.GREEN, c, Style.RESET_ALL))
+    else:
+        return ''.join((Fore.BLUE, c, Style.RESET_ALL))
+
+def img2ascii(image, width=20, mirror_image=False) -> List[str]:
+    image = resize_image(image, new_width=width).convert('RGB')
+
+    if mirror_image:
+        image = ImageOps.mirror(image)
+
+    data = image.load()
+
+    ascii_art = []
+    for w in range(width):
+        for h in (height:=range(width)):
+            r, g, b = data[h, w]
+            char = int(r/3 + g/3 + b/3)
+            ascii_art.append(detect_color(CHARS[int(char * len(CHARS) // 256)], r, g, b))
+        ascii_art.append('\n')
+    return ascii_art
 
 #endregion
 
@@ -70,6 +101,7 @@ def make(ctx, name, id):
     query = name or id
     console = ctx.obj['CONSOLE']
 
+    # make result is stored in assets/{id}.json
     with console.status('Making initial request . . .', spinner='dots3') as _:
         response = requests.get(urljoin(ctx.obj['BASE_API'], query)).json()
         level = randint(30, 60)
@@ -103,17 +135,20 @@ def make(ctx, name, id):
 
     if ctx.obj['VERBOSE']:
         console.print(result)
+        click.echo('\n')
 
     click.secho(f"Done! A new JSON file was created in '{ctx.obj['ASSETS']}/'.", fg='bright_yellow')
 
 @cli.command(context_settings=CONTEXT_SETTINGS, help=style("Create an ASCII image.", fg='bright_green'))
 @click.option('--name', type=click.STRING, help=style("Name of a pokemon (English).", fg='bright_yellow'))
 @click.option('--id', type=click.STRING, help=style("A pokemon ID.", fg='bright_yellow'))
+@click.option('--mirror/--no-mirror', is_flag=True, default=False, help=style("Mirror image (Player).", fg='bright_yellow'))
 @click.pass_context
-def ascii(ctx, name, id):
-    result = None
+def ascii(ctx, name, id, mirror):
     query = name or id
     
+    colorama.init(autoreset=False)
+
     # the base api only contains very small sprites,
     # but there's another API which provides higher
     # quality sprites which are only searchable by id
@@ -123,16 +158,24 @@ def ascii(ctx, name, id):
         
         # first find and download the pokemon sprite
         filename = f"{query}.png"
+        image_path = ctx.obj['ASSETS'].joinpath(filename)
         response = requests.get(urljoin(ctx.obj['SPRITE_API'], filename), stream=True)
-        with open(ctx.obj['ASSETS'].joinpath(filename), mode='wb') as file_handler:
+        with open(image_path, mode='wb') as file_handler:
             for chunk in response.iter_content(1024):
                 file_handler.write(chunk)
 
-        # then generate the ascii image
-        pass
+        # then generate the ascii image and store the result in assets/{id}.txt
+        ascii_art = img2ascii(Image.open(image_path), width=20, mirror_image=mirror)
+        with open(ctx.obj['ASSETS'].joinpath(f"{query}.txt"), mode='w', encoding='utf-8') as file_handler:
+            file_handler.writelines(ascii_art)
+
+        # cleanup
+        image_path.unlink(missing_ok=True)
 
     if ctx.obj['VERBOSE']:
-        click.echo("TODO: Preview comes here.")
+        click.echo(f"\n{''.join(ascii_art)}")
+
+    click.secho(f"Done! A new ASCII image was created in '{ctx.obj['ASSETS']}/'.", fg='bright_yellow')
 
 if __name__ == '__main__':
     try:
