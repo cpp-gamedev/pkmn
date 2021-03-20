@@ -40,8 +40,8 @@ you should be able to use this script:
 ```bash
 $ # creates a new JSON file in assets/
 $ python gen_data.py make --id 1
-$ # creates a new ascii image as txt file in assets/
-$ python gen_data.py ascii --id 1
+$ # creates a new ascii image as txt file in assets/ and prints a preview
+$ python gen_data.py --verbose ascii --id 1 --mirror
 ```
 
 You can also use the `--name` option for identifying a new pokemon. Repeat both
@@ -52,7 +52,7 @@ $ python gen_data.py --help
 ```
 
 to get more help. Once you've obtained these files, build the project to play
-this game.
+this game. Use the `--mirror` flag for your own pokemon (recommended).
 
 ### On Visual Studio (Windows)
 
