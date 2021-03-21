@@ -362,3 +362,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Python - virtual environment
+venv/
+
+# project-specific directories
+assets/
