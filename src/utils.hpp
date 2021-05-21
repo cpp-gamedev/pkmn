@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <random>
 #include <type_traits>
@@ -64,3 +65,9 @@ enum class Color
 };
 
 std::string style(std::string text, Color fore, Color back = Color::BLACK);
+
+std::filesystem::path locate_dir(std::filesystem::path& path, int max_depth = 10);
+
+bool validate_asset_dir(const std::filesystem::path& asset_dir);
+
+std::vector<std::string> read_file(const std::filesystem::path& path);

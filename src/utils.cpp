@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <chrono>
+#include <fstream>
+#include <filesystem>
 #include <iostream>
 #include <random>
 #include <string>
@@ -39,4 +41,49 @@ std::string style(std::string text, Color fore, Color back = Color::BLACK)
 	}
 
 	return ansi_text.append(kt::format_str("{}\033[0m", text));
+}
+
+std::filesystem::path locate_dir(std::filesystem::path& path, int max_depth = 10)
+{
+	if (max_depth > 0)
+	{		
+		while (!std::filesystem::exists(path))
+		{
+			max_depth -= 1;
+			path = path.parent_path().parent_path() / path.stem();
+		}
+
+		return path;
+	}
+	else
+	{
+		std::cerr << "Directory not found (max_depth exceeded?): " << path.string() << '\n';
+	}	
+}
+
+bool validate_asset_dir(const std::filesystem::path& asset_dir)
+{
+	// check manifest here
+	return true;
+}
+
+std::vector<std::string> read_file(const std::filesystem::path& path)
+{
+	std::string line{};
+	std::vector<std::string> lines{};
+	std::ifstream file{path.string()};
+
+	if (std::filesystem::exists(path))
+	{
+		while (getline(file, line))
+		{
+			lines.push_back(line + '\n');
+		}
+	}
+	else
+	{
+		std::cerr << "File not found: " << path.string() << '\n';
+	}
+
+	return lines;
 }
