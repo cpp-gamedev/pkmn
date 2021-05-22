@@ -66,7 +66,7 @@ enum class Color
 
 std::string style(std::string text, Color fore, Color back = Color::BLACK);
 
-std::filesystem::path locate_dir(std::filesystem::path& path, int max_depth = 10);
+std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10);
 
 bool validate_asset_dir(const std::filesystem::path& asset_dir);
 

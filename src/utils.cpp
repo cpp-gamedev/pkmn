@@ -43,22 +43,17 @@ std::string style(std::string text, Color fore, Color back = Color::BLACK)
 	return ansi_text.append(kt::format_str("{}\033[0m", text));
 }
 
-std::filesystem::path locate_dir(std::filesystem::path& path, int max_depth = 10)
+std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10)
 {
-	if (max_depth > 0)
-	{		
-		while (!std::filesystem::exists(path))
-		{
-			max_depth -= 1;
-			path = path.parent_path().parent_path() / path.stem();
-		}
+	auto path = std::filesystem::current_path() / std::filesystem::path(dir_name);
 
-		return path;
-	}
-	else
+	while (!std::filesystem::exists(path) && max_depth > 0)
 	{
-		std::cerr << "Directory not found (max_depth exceeded?): " << path.string() << '\n';
-	}	
+		max_depth -= 1;
+		path = path.parent_path().parent_path() / path.stem();
+	}
+
+	return (max_depth > 0) ? path : std::filesystem::path();
 }
 
 bool validate_asset_dir(const std::filesystem::path& asset_dir)
