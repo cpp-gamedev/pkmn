@@ -30,7 +30,8 @@ If this is your first time using a python script, use
 ```bash
 $ python -m venv venv/
 $ source venv/Scripts/activate
-$ pip install -r requirements.txt
+$ python -m pip install --upgrade pip
+$ pip install -r requirements.txt --only-binary all
 ```
 
 to install the dependencies in a virtual environment. Note that this script
@@ -38,10 +39,10 @@ assumes that it is being run from the project's root directory. After that
 you should be able to use this script:
 
 ```bash
-$ # creates a new JSON file in assets/
-$ python gen_data.py make --id 1
-$ # creates a new ascii image as txt file in assets/ and prints a preview
-$ python gen_data.py --verbose ascii --id 1 --mirror
+$ # creates two new pkmn data sets (sprite + data)
+$ python gen_data.py --verbose make --id 1 4
+$ # create manifest.json
+$ python gen_data.py manifest
 ```
 
 You can also use the `--name` option for identifying a new pokemon. Repeat both
