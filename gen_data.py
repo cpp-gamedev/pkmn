@@ -16,22 +16,33 @@ Additionally, use `python gen_data.py ascii --name <pokemon>` to create a new
 ascii image. In both instances, a ID may be used as primary argument instead.
 """
 
+import argparse
 import json
+import os
+from collections import Counter
 from pathlib import Path
+from pprint import pprint
 from random import randint, random
 from typing import List
 from urllib.parse import urljoin
 
-import click
 import colorama
 import requests
-from click import style
 from colorama import Fore, Style
+from colorama.ansi import clear_screen
 from PIL import Image, ImageOps
 from rich.console import Console
 from rich.progress import track
 
-#region Image Processing
+__version__ = "0.0.1"
+assets = Path('assets/')
+assets.mkdir(parents=True, exist_ok=True)
+ASSETS = assets
+BASE_API = "https://pokeapi.co/api/v2/pokemon/"
+SPRITE_API = "https://pokeres.bastionbot.org/images/pokemon/"
+CONSOLE = Console()
+
+#region image processing
 
 CHARS = [' ', '.', 'o', 'v', '@', '#', 'W']
 
@@ -76,34 +87,12 @@ def img2ascii(image, width=20, mirror_image=False) -> List[str]:
 
 #endregion
 
-CONTEXT_SETTINGS = dict(max_content_width=120)
-
-@click.group(invoke_without_command=True, context_settings=CONTEXT_SETTINGS, help=style("PKMN utility tool.", fg='bright_magenta'))
-@click.option('--verbose', is_flag=True, default=False, help=style("Enable verbose terminal output.", fg='bright_yellow'))
-@click.version_option(version='0.0.1', prog_name="get-data", help=style("Show the version and exit.", fg='bright_yellow'))
-@click.pass_context
-def cli(ctx, verbose):
-    ctx.ensure_object(dict)
-    assets = Path('assets/')
-    assets.mkdir(parents=True, exist_ok=True)
-    ctx.obj['ASSETS'] = assets
-    ctx.obj['BASE_API'] = "https://pokeapi.co/api/v2/pokemon/"
-    ctx.obj['SPRITE_API'] = "https://pokeres.bastionbot.org/images/pokemon/"
-    ctx.obj['CONSOLE'] = Console()
-    ctx.obj['VERBOSE'] = verbose
-
-@cli.command(context_settings=CONTEXT_SETTINGS, help=style("Create a new PKMN data file.", fg='bright_green'))
-@click.option('--name', type=click.STRING, help=style("Name of a pokemon (English).", fg='bright_yellow'))
-@click.option('--id', type=click.STRING, help=style("A pokemon ID.", fg='bright_yellow'))
-@click.pass_context
-def make(ctx, name, id):
+def req_pkmn_data(id_: int, verbose: bool) -> None:
     result = None
-    query = name or id
-    console = ctx.obj['CONSOLE']
 
-    # make result is stored in assets/{id}.json
-    with console.status('Making initial request . . .', spinner='dots3') as _:
-        response = requests.get(urljoin(ctx.obj['BASE_API'], query)).json()
+    # result is stored in assets/{id}.json
+    with CONSOLE.status('Making initial request . . .', spinner='dots3') as _:
+        response = requests.get(urljoin(BASE_API, str(id_))).json()
         level = randint(30, 60)
         result = {
             'id': response['id'],
@@ -130,55 +119,83 @@ def make(ctx, name, id):
         }
     result['moves'] = moves
 
-    with open(ctx.obj['ASSETS'].joinpath(f"{result['id']}.json"), mode='w', encoding='utf-8') as file_handler:
+    with open(ASSETS.joinpath(f"{result['id']}.json"), mode='w', encoding='utf-8') as file_handler:
         json.dump(result, file_handler)
 
-    if ctx.obj['VERBOSE']:
-        console.print(result)
-        click.echo('\n')
+    if verbose:
+        pprint(result)
 
-    click.secho(f"Done! A new JSON file was created in '{ctx.obj['ASSETS']}/'.", fg='bright_yellow')
+    print(f"{Fore.YELLOW}Done! A new JSON file was created in {str(ASSETS)!r}.{Style.RESET_ALL}")
 
-@cli.command(context_settings=CONTEXT_SETTINGS, help=style("Create an ASCII image.", fg='bright_green'))
-@click.option('--name', type=click.STRING, help=style("Name of a pokemon (English).", fg='bright_yellow'))
-@click.option('--id', type=click.STRING, help=style("A pokemon ID.", fg='bright_yellow'))
-@click.option('--mirror/--no-mirror', is_flag=True, default=False, help=style("Mirror image (Player).", fg='bright_yellow'))
-@click.pass_context
-def ascii(ctx, name, id, mirror):
-    query = name or id
-    
+def gen_sprite(id_: int,  mirror: bool, verbose: bool) -> None:    
     colorama.init(autoreset=False)
 
-    # the base api only contains very small sprites,
-    # but there's another API which provides higher
-    # quality sprites which are only searchable by id
-    with ctx.obj['CONSOLE'].status('Creating new ASCII image . . .', spinner='dots3') as _:
-        if name:
-            query = requests.get(urljoin(ctx.obj['BASE_API'], query)).json()['id']
-        
-        # first find and download the pokemon sprite
-        filename = f"{query}.png"
-        image_path = ctx.obj['ASSETS'].joinpath(filename)
-        response = requests.get(urljoin(ctx.obj['SPRITE_API'], filename), stream=True)
+    with CONSOLE.status('Creating new ASCII image . . .', spinner='dots3') as _:        
+        filename = f"{id_}.png"
+        image_path = ASSETS.joinpath(filename)
+        response = requests.get(urljoin(SPRITE_API, filename), stream=True)
         with open(image_path, mode='wb') as file_handler:
             for chunk in response.iter_content(1024):
                 file_handler.write(chunk)
 
-        # then generate the ascii image and store the result in assets/{id}.txt
         ascii_art = img2ascii(Image.open(image_path), width=20, mirror_image=mirror)
-        with open(ctx.obj['ASSETS'].joinpath(f"{query}.txt"), mode='w', encoding='utf-8') as file_handler:
+        with open(ASSETS.joinpath(f"{id_}.txt"), mode='w', encoding='utf-8') as file_handler:
             file_handler.writelines(ascii_art)
 
-        # cleanup
         image_path.unlink(missing_ok=True)
 
-    if ctx.obj['VERBOSE']:
-        click.echo(f"\n{''.join(ascii_art)}")
+    if verbose:
+        print(f"\n{''.join(ascii_art)}")
 
-    click.secho(f"Done! A new ASCII image was created in '{ctx.obj['ASSETS']}/'.", fg='bright_yellow')
+    print(f"{Fore.YELLOW}Done! A new ASCII image was created in {str(ASSETS)!r}.{Style.RESET_ALL}")
+
+def check_manifest(verbose: bool) -> None:
+    extensions = ['.txt', '.json']
+
+    files = list(filter(
+        lambda file: file.suffix in extensions and file.stem.isnumeric(), 
+        [file for file in ASSETS.glob(r'**/*')]
+    ))
+    
+    ids = list(map(lambda file: int(file.stem), files))
+    duplicates = [id_ for id_, count in Counter(ids).items() if count > 1]
+
+    manifest = {
+        'files': list(map(str, files)),
+        'duplicates': duplicates,
+        'game_ready': len(duplicates) >= 2,
+    }
+
+    with open("manifest.json", mode='w', encoding='utf-8') as file_handler:
+        json.dump(manifest, file_handler)
+
+    if verbose: pprint(manifest)
+
+def main():
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('--version', action='version', version=f"%(prog)s {__version__}")
+    parser.add_argument('--verbose', action='store_true', help="increase output verbosity")
+
+    subparser = parser.add_subparsers(dest='command')
+
+    make_parser = subparser.add_parser('make', help="create new pkmn data")
+    make_parser.add_argument('--id', type=int, nargs='+', required=True, help="one or more pokemon id")
+    make_parser.add_argument('--mirror', action='store_true', help="mirror sprite")
+
+    manifest_parser = subparser.add_parser('manifest', help="validate manifest")
+
+    args = parser.parse_args()
+
+    if args.command == 'make':
+        for id_ in args.id:
+            req_pkmn_data(id_, verbose=False)
+            gen_sprite(id_, args.mirror, args.verbose)
+    elif args.command == 'manifest':
+        check_manifest(args.verbose)
+    else:
+        raise NotImplementedError()
+
 
 if __name__ == '__main__':
-    try:
-        cli(obj={})
-    except KeyboardInterrupt:
-        pass
+    main()
