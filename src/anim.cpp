@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -26,4 +27,15 @@ std::vector<std::string> gen_healthbar(std::string name, int level, int hp, int 
 	hitpoints = std::string(16 - hitpoints.length(), ' ').append(hitpoints);
 
 	return {label, progressbar, hitpoints};
+}
+
+std::vector<std::string> load_sprite(int id, const std::filesystem::path& assets)
+{
+	for (const auto& file : std::filesystem::directory_iterator(assets))
+	{
+		if (file.path().extension() == ".txt" && std::stoi(file.path().stem().string()) == id)
+		{
+			return read_file(file);
+		}			
+	}
 }

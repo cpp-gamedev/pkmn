@@ -366,5 +366,6 @@ FodyWeavers.xsd
 # Python - virtual environment
 venv/
 
-# project-specific directories
+# project-specific files and directories
 assets/
+manifest.json
