@@ -1,0 +1,3 @@
+[submodule "libs/djson"]
+	path = libs/djson
+	url = https://github.com/karnkaul/djson
