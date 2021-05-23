@@ -68,6 +68,6 @@ std::string style(std::string text, Color fore, Color back = Color::BLACK);
 
 std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10);
 
-bool validate_asset_dir(const std::filesystem::path& asset_dir);
-
 std::vector<std::string> read_file(const std::filesystem::path& path);
+
+bool check_manifest(const std::filesystem::path& path);
