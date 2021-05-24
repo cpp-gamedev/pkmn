@@ -4,41 +4,42 @@
 #include <vector>
 #include "utils.hpp"
 
-enum class MoveTypes
+enum class MoveType
 {
-	NONE,	// move failed or wasn't initialized
-	ATTACK, // deals damage
-	DEFEND, // increase pokemon defense
-	HEAL,	// Increase pokemon health or remove status effects
+	NONE,
+	ATTACK,
+	DEFEND,
+	HEAL,
 };
 
 struct Move
 {
-	std::string m_move_name;
-	MoveTypes m_mt;
-	float m_accuracy;
-	int m_power;
-	Move() = default;
-	Move(std::string move_name, MoveTypes mt, float accuracy, int power);
+	std::string name{};
+	MoveType move_type{MoveType::NONE};
+	int accuracy{};
+	int damage{};
+	Move();
 };
 
 struct Pokemon
 {
-	std::string m_name;
+  private:
+	std::vector<std::string> read_asset(std::string ext);
+	
+	std::string json{};
+	std::vector<std::string> sprite{};
 
-	std::int32_t m_level = 1;
-	std::int32_t m_hp = 4 * m_level * random_range(0.8, 1.2);
-	std::int32_t m_max_hp = m_hp;
-	std::int32_t m_def{};
-	std::int32_t m_attack{};
+  public:
+	std::filesystem::path assets_dir{};
 
-	std::vector<Move> m_moveset;
-	Move m_next_move = Move("None", MoveTypes::NONE, 100, 0);
+	const int id{};
+	std::string name{};
+	int level{};
+	int hp{};
+	int max_hp{};
+	int atk{};
+	int def{};
+	std::vector<Move> move_set{};
 
-	Pokemon() = default; // default constructor can be compiler generated since you are using default member initialization
-	Pokemon(std::string Name, int level, int def, int attack, Move next_move);
-	Move make_move(Pokemon& source, Pokemon& target);
-	Move attack(Pokemon& source, Pokemon& target);
-	Move defend(Pokemon& source);
-	Move heal(Pokemon& source);
+	Pokemon(int id, std::filesystem::path assets_dir);
 };
