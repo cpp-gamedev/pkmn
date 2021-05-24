@@ -90,8 +90,12 @@ bool check_manifest(const std::filesystem::path& path)
 		if (auto n = dj::node_t::make(json))
 		{
 			dj::node_t& node = *n;
-			game_ready = (node["game_ready"].as<std::string>() == "true");
+			game_ready = node["game_ready"].as<bool>();
 		}
+	}
+	else
+	{
+		std::cerr << "File not found: " << path.string() << '\n';
 	}
 
 	return game_ready;

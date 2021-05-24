@@ -33,7 +33,7 @@ std::vector<std::string> load_sprite(int id, const std::filesystem::path& assets
 {
 	for (const auto& file : std::filesystem::directory_iterator(assets))
 	{
-		if (file.path().extension() == ".txt" && std::stoi(file.path().stem().string()) == id)
+		if (file.path().filename() == kt::format_str("{}.txt", std::to_string(id)))
 		{
 			return read_file(file);
 		}
