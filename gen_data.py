@@ -108,13 +108,14 @@ def req_pkmn_data(id_: int, verbose: bool) -> None:
     endpoints = [move['move']['url'] for move in response['moves']]
     for index, endpoint in track(enumerate(endpoints), "Sending Requests", total=len(endpoints), transient=True):
         move_response = requests.get(endpoint).json()
+        unescape = lambda text: text.replace('\u00e9','e').replace('\u2019', "'").replace('\n',' ').replace('\u00ad', '-')
         moves[index] = {
             'name': move_response['names'][7]['name'],
             'accuracy': int(move_response['accuracy']) if move_response['accuracy'] is not None else None,
             'effect_changes': move_response['effect_changes'] if len(move_response['effect_changes']) > 0 else [None],
             'effect_chance': int(move_response['effect_chance']) if move_response['effect_chance'] is not None else None,
             'power': int(move_response['power']) if move_response['power'] is not None else None,
-            'flavor_text_entries': [entry['flavor_text'].replace("'","") for entry in move_response['flavor_text_entries'] if entry['language']['name'] == 'en']
+            'flavor_text_entries': [unescape(entry['flavor_text']) for entry in move_response['flavor_text_entries'] if entry['language']['name'] == 'en']
         }
     result['moves'] = moves
 
