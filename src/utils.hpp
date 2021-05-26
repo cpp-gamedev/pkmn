@@ -31,7 +31,7 @@ T random_choice(const std::vector<T>& vector)
 }
 
 template <typename T>
-std::vector<T> random_choices(const std::vector<T>& vector, T k)
+std::vector<T> random_choices(const std::vector<T>& vector, std::size_t k)
 {
 	// select k random values in vector
 	std::vector<T> choices(k);
