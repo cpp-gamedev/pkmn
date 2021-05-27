@@ -19,13 +19,13 @@ std::vector<std::string> gen_healthbar(Pokemon& pkmn)
 
 	label = std::string(max_width - label.length(), ' ').append(label);
 
-	double percentage = ceil(static_cast<double>(pkmn.hp) / pkmn.max_hp * 100);
-	int digits = static_cast<int>(log10(percentage));
-	int first_digit = (pkmn.max_hp == pkmn.hp) ? 10 : static_cast<int>(percentage / pow(10, digits));
+	double linear_map = (10.0 / pkmn.max_hp) * pkmn.hp;
+	int hp_scaled = (0 < linear_map && linear_map < 1) ? 1 : std::floor(linear_map);
 
-	std::string stars = std::string(first_digit, '*');
-	stars = stars.append(std::string(10LL - first_digit, ' '));
-	std::string progressbar = kt::format_str("HP [{}]", style(stars, Color::GREEN));
+	std::string stars = std::string(hp_scaled, '*');
+	stars = stars.append(std::string(10 - hp_scaled, ' '));
+	Color star_color = (hp_scaled >= 5) ? Color::GREEN : (3 < hp_scaled && hp_scaled < 5) ? Color::YELLOW : Color::RED;
+	std::string progressbar = kt::format_str("HP [{}]", style(stars, star_color));
 	progressbar = std::string(max_width - 15, ' ').append(progressbar);
 
 	std::string hitpoints = kt::format_str("{} / {}", pkmn.hp, pkmn.max_hp);
@@ -45,7 +45,7 @@ void print_frame(Pokemon& pkmn1, Pokemon& pkmn2)
 	std::size_t padding = healthbar1[0].length() + healthbar2[0].length();
 
 	if (padding > 30)
-		padding -= 2*(padding - 30);
+		padding -= 2 * (padding - 30);
 
 	for (std::size_t i = 0; i < 3; i++)
 		healthbars.append(healthbar1[i]).append(std::string(padding, ' ')).append(healthbar2[i]).append("\n");
