@@ -23,7 +23,7 @@ void Pokemon::configure_move_set()
 
 	for (Move& move : this->move_set)
 	{
-		if (move.power > 0 && move.accuracy > 50)
+		if (move.power > 20 && move.accuracy > 50)
 		{
 			move.type = MoveType::ATTACK;
 			move.flavor_text = kt::format_str("{} deals {} points in damage.", move.name, move.power);
@@ -37,8 +37,7 @@ void Pokemon::configure_move_set()
 		{
 			move.type = MoveType::HEAL;
 			move.accuracy = 100;
-			int heal = random_range<int>(30, 90);
-			move.power = heal + 10 - (heal % 10 == 0 ? 10 : heal % 10); // round to nearest 10
+			move.power = random_range<int>(4, 9) * 10;
 			move.flavor_text = kt::format_str("Increase your HP by {} points.", move.power);
 		}
 	}

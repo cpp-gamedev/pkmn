@@ -36,8 +36,8 @@ struct Pokemon
 
   public:
 	std::filesystem::path assets_dir{};
-	std::vector<std::string> sprite{};
 
+	std::vector<std::string> sprite{};
 	int id{};
 	std::string name{};
 	int level{};
