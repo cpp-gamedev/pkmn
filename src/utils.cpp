@@ -7,6 +7,7 @@
 #include <random>
 #include <string>
 #include <thread>
+#include "utils.hpp"
 #include "str_format.hpp"
 #include <dumb_json/djson.hpp>
 
@@ -20,19 +21,7 @@ void sleep(int ms)
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-enum class Color
-{
-	BLACK = 0,
-	RED = 1,
-	GREEN = 2,
-	YELLOW = 3,
-	BLUE = 4,
-	MAGENTA = 5,
-	CYAN = 6,
-	WHITE = 7
-};
-
-std::string style(std::string text, Color fore, Color back = Color::BLACK)
+std::string style(std::string text, Color fore, Color back)
 {
 	// add fore and background ground color to text
 	std::string ansi_text = kt::format_str("\x1B[3{}m", static_cast<int>(fore));
@@ -45,7 +34,7 @@ std::string style(std::string text, Color fore, Color back = Color::BLACK)
 	return ansi_text.append(kt::format_str("{}\033[0m", text));
 }
 
-std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10)
+std::filesystem::path find_upwards(std::string dir_name, int max_depth)
 {
 	auto path = std::filesystem::current_path() / std::filesystem::path(dir_name);
 
@@ -79,18 +68,20 @@ std::vector<std::string> read_file(const std::filesystem::path& path)
 	return lines;
 }
 
-bool check_manifest(const std::filesystem::path& path)
+Manifest check_manifest(const std::filesystem::path& path)
 {
-	bool game_ready = false;
+	Manifest manifest{};
 
 	if (std::filesystem::exists(path))
 	{
-		auto manifest = read_file(path);
-		auto json = std::accumulate(manifest.begin(), manifest.end(), std::string(""));
+		auto file = read_file(path);
+		auto json = std::accumulate(file.begin(), file.end(), std::string(""));
 		if (auto n = dj::node_t::make(json))
 		{
 			dj::node_t& node = *n;
-			game_ready = node["game_ready"].as<bool>();
+			manifest.game_ready = node["game_ready"].as<bool>();
+			manifest.duplicates = node["duplicates"].as<std::vector<int>>();
+			manifest.files = node["files"].as<std::vector<std::string>>();
 		}
 	}
 	else
@@ -98,5 +89,5 @@ bool check_manifest(const std::filesystem::path& path)
 		std::cerr << "File not found: " << path.string() << '\n';
 	}
 
-	return game_ready;
+	return manifest;
 }

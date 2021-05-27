@@ -70,4 +70,12 @@ std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10);
 
 std::vector<std::string> read_file(const std::filesystem::path& path);
 
-bool check_manifest(const std::filesystem::path& path);
+struct Manifest
+{
+	Manifest() = default;
+	std::vector<std::string> files{};
+	std::vector<int> duplicates{};
+	bool game_ready{};
+};
+
+Manifest check_manifest(const std::filesystem::path& path);
