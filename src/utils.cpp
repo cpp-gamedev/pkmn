@@ -9,7 +9,7 @@
 #include <thread>
 #include "utils.hpp"
 #include <str_format/str_format.hpp>
-#include <dumb_json/djson.hpp>
+#include <dumb_json/json.hpp>
 
 void clear_screen()
 {
@@ -74,14 +74,14 @@ Manifest check_manifest(const std::filesystem::path& path)
 
 	if (std::filesystem::exists(path))
 	{
-		auto file = read_file(path);
-		auto json = std::accumulate(file.begin(), file.end(), std::string(""));
-		if (auto n = dj::node_t::make(json))
+		auto const file = read_file(path);
+		auto const str = std::accumulate(file.begin(), file.end(), std::string(""));
+		dj::json_t json;
+		if (json.read(str) && json.is_object())
 		{
-			dj::node_t& node = *n;
-			manifest.game_ready = node["game_ready"].as<bool>();
-			manifest.duplicates = node["duplicates"].as<std::vector<int>>();
-			manifest.files = node["files"].as<std::vector<std::string>>();
+			manifest.game_ready = json["game_ready"].as<bool>();
+			manifest.duplicates = json["duplicates"].as<std::vector<int>>();
+			manifest.files = json["files"].as<std::vector<std::string>>();
 		}
 	}
 	else

@@ -31,7 +31,7 @@ struct Pokemon
 	std::vector<std::string> read_asset(std::string ext);
 	void configure_move_set();
 	
-	std::string json{};
+	std::string json_str{};
 	std::vector<Move> all_moves{};
 
   public:
