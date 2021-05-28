@@ -32,6 +32,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.*
 add_subdirectory(libs/djson)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE libs/include)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL Clang OR CMAKE_CXX_COMPILER_ID STREQUAL GNU)
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)

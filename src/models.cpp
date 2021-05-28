@@ -3,7 +3,7 @@
 #include <numeric>
 #include <vector>
 #include "utils.hpp"
-#include "str_format.hpp"
+#include <str_format/str_format.hpp>
 #include <dumb_json/djson.hpp>
 
 Move::Move(std::string name, MoveType type, int accuracy, int effect_chance, int power, std::string flavor_text)

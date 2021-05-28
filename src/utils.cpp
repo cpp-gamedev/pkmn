@@ -8,7 +8,7 @@
 #include <string>
 #include <thread>
 #include "utils.hpp"
-#include "str_format.hpp"
+#include <str_format/str_format.hpp>
 #include <dumb_json/djson.hpp>
 
 void clear_screen()
