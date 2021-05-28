@@ -7,7 +7,7 @@
 #include <dumb_json/djson.hpp>
 
 Move::Move(std::string name, MoveType type, int accuracy, int effect_chance, int power, std::string flavor_text)
-	: name(name), type(type), accuracy(accuracy), effect_chance(effect_chance), power(power), flavor_text(flavor_text)
+	: name(name), type(type), accuracy(accuracy), power(power), effect_chance(effect_chance), flavor_text(flavor_text)
 {
 }
 
@@ -43,7 +43,7 @@ void Pokemon::configure_move_set()
 	}
 }
 
-Pokemon::Pokemon(int id, std::filesystem::path assets_dir) : id{id}, assets_dir{assets_dir}
+Pokemon::Pokemon(int id, std::filesystem::path assets_dir) : assets_dir{assets_dir}, id{id}
 {
 	this->sprite = read_asset("txt");
 	auto lines = read_asset("json");
