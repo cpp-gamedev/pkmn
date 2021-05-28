@@ -1,0 +1,6 @@
+[submodule "libs/djson"]
+	path = libs/djson
+	url = https://github.com/karnkaul/djson
+[submodule "libs/include/str_format"]
+	path = libs/include/str_format
+	url = https://github.com/karnkaul/str-format

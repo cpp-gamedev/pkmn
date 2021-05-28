@@ -5,20 +5,22 @@ PKMN Utility Tool (C) hentai-chan <dev.hentai-chan@outlook.com>
 
 Description
 -----------
-This script uses the Pokemon API to create a JSON file for the pkmn game.
+This script uses the Pokemon API to create a JSON file and an ASCII sprite for the
+pkmn game. Run it from the root directory of the project and ensure that all dependencies
+are installed.
 
 Usage
 -----
-Run 'python gen_data.py make --name <pokemon>' from the project's root directory
-to create a new JSON file for pkmn. Append the '--help' option for more help.
 
-Additionally, use `python gen_data.py ascii --name <pokemon>` to create a new
-ascii image. In both instances, a ID may be used as primary argument instead.
+1. creates two new pkmns (bulbasaur and charmander)
+>> python gen_data.py --verbose make --id 1 4
+
+2. creates a manifest.json
+>> python gen_data.py manifest
 """
 
 import argparse
 import json
-import os
 from collections import Counter
 from pathlib import Path
 from pprint import pprint
@@ -29,7 +31,6 @@ from urllib.parse import urljoin
 import colorama
 import requests
 from colorama import Fore, Style
-from colorama.ansi import clear_screen
 from PIL import Image, ImageOps
 from rich.console import Console
 from rich.progress import track
@@ -98,24 +99,23 @@ def req_pkmn_data(id_: int, verbose: bool) -> None:
             'id': response['id'],
             'name': response['name'],
             'level': level,
-            'hp': int(2 * level * (0.8 + 0.4 * random())), # formula for hp is a rough estimation
-            'atk': 1, 
-            'def': 1, 
+            'hp': int(2 * level * (0.8 + 0.4 * random())),
+            'atk': 100,
+            'def': 100,
         }
 
-    # the base api does not provide detailed information about moves, 
-    # so we need to make more calls to the api (+1 per move)
     moves = {}
     endpoints = [move['move']['url'] for move in response['moves']]
     for index, endpoint in track(enumerate(endpoints), "Sending Requests", total=len(endpoints), transient=True):
         move_response = requests.get(endpoint).json()
+        unescape = lambda text: text.replace('\u00e9','e').replace('\u2019', "'").replace('\n',' ').replace('\u00ad', '-')
         moves[index] = {
             'name': move_response['names'][7]['name'],
             'accuracy': int(move_response['accuracy']) if move_response['accuracy'] is not None else None,
-            'effect_changes': move_response['effect_changes'],
+            'effect_changes': move_response['effect_changes'] if len(move_response['effect_changes']) > 0 else [None],
             'effect_chance': int(move_response['effect_chance']) if move_response['effect_chance'] is not None else None,
             'power': int(move_response['power']) if move_response['power'] is not None else None,
-            'flavor_text_entries': [entry['flavor_text'] for entry in move_response['flavor_text_entries'] if entry['language']['name'] == 'en']
+            'flavor_text_entries': [unescape(entry['flavor_text']) for entry in move_response['flavor_text_entries'] if entry['language']['name'] == 'en']
         }
     result['moves'] = moves
 

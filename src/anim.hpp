@@ -2,7 +2,8 @@
 
 #include<string>
 #include<vector>
+#include "models.hpp"
 
-std::vector<std::string> gen_healthbar(std::string name, int level, int hp, int max_hp);
+std::vector<std::string> gen_healthbar(Pokemon& pkmn);
 
-std::vector<std::string> load_sprite(int id, const std::filesystem::path& assets);
+void print_frame(Pokemon& pkmn1, Pokemon& pkmn2);

@@ -369,3 +369,8 @@ venv/
 # project-specific files and directories
 assets/
 manifest.json
+
+# VSCode, clangd etc
+.vscode/
+.cache/
+compile_commands.json

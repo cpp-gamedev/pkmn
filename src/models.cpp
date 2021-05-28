@@ -1,78 +1,83 @@
 #include "models.hpp"
+#include <algorithm>
+#include <numeric>
 #include <vector>
 #include "utils.hpp"
+#include <str_format/str_format.hpp>
+#include <dumb_json/json.hpp>
 
-Move::Move(std::string move_name, const MoveTypes mt, const float accuracy, const int power)
-	: m_move_name(std::move(move_name)), m_mt(mt), m_accuracy(accuracy), m_power(power)
+Move::Move(std::string name, MoveType type, int accuracy, int effect_chance, int power, std::string flavor_text)
+	: name(name), type(type), accuracy(accuracy), power(power), effect_chance(effect_chance), flavor_text(flavor_text)
 {
 }
 
-Pokemon::Pokemon(std::string name, const std::int32_t level, const std::int32_t def, const std::int32_t attack, const Move next_move)
-	: m_name(std::move(name)), m_level(level), m_hp(2 * m_level * random_range<float>(0.8, 1.2)), m_def(def), m_attack(attack), m_next_move(next_move)
+std::vector<std::string> Pokemon::read_asset(std::string ext)
 {
+	auto path = assets_dir / std::filesystem::path(kt::format_str("{}.{}", std::to_string(this->id), ext));
+	return read_file(path);
 }
 
-Move Pokemon::make_move(Pokemon& source, Pokemon& target)
+void Pokemon::configure_move_set()
 {
-	if ((random_range<int>(0, 100) <= source.m_next_move.m_accuracy) && source.m_hp > 0 && target.m_hp > 0)
+	this->move_set = random_choices(this->all_moves, 4);
+
+	for (Move& move : this->move_set)
 	{
-		switch (source.m_next_move.m_mt)
+		if (move.power > 20 && move.accuracy > 50)
 		{
-		case MoveTypes::ATTACK:
-			return attack(source, target);
-		case MoveTypes::DEFEND:
-			return defend(source);
-
-		case MoveTypes::HEAL:
-			return heal(source);
-
-		case MoveTypes::NONE:
-			return source.m_next_move;
+			move.type = MoveType::ATTACK;
+			move.flavor_text = kt::format_str("{} deals {} points in damage.", move.name, move.power);
+		}
+		else if (move.power <= 20 && move.effect_chance >= 0)
+		{
+			move.type = random_choice(std::vector<MoveType>{MoveType::BOOST_ATK, MoveType::BOOST_DEF});
+			move.flavor_text = kt::format_str("Boost your {} by 10%.", move.type == MoveType::BOOST_ATK ? "ATK" : "DEF");
+		}
+		else
+		{
+			move.type = MoveType::HEAL;
+			move.accuracy = 100;
+			move.power = random_range<int>(4, 9) * 10;
+			move.flavor_text = kt::format_str("Increase your HP by {} points.", move.power);
 		}
 	}
-
-	return Move("Failed", MoveTypes::NONE, 100, 0);
 }
 
-Move Pokemon::attack(Pokemon& source, Pokemon& target)
+Pokemon::Pokemon(int id, std::filesystem::path assets_dir) : assets_dir{assets_dir}, id{id}
 {
-
-	if (target.m_hp > 0)
+	this->sprite = read_asset("txt");
+	auto lines = read_asset("json");
+	this->json_str = std::accumulate(lines.begin(), lines.end(), std::string(""));
+	dj::json_t json;
+	if (json.read(this->json_str) && json.is_object())
 	{
-		int attack = source.m_attack;
-		if (random_range<int>(random_range<int>(1, 20), 100))
+		// pkmn data
+		this->id = id;
+		this->name = json["name"].as<std::string>();
+		this->level = json["level"].as<int>();
+		this->hp = json["hp"].as<int>();
+		this->max_hp = this->hp;
+		this->atk = json["atk"].as<int>();
+		this->def = json["def"].as<int>();
+		// move data
+		if (auto moves = json.find("moves"))
 		{
-			attack *= 2; // crit damage
+			for (auto const& [num, m] : moves->as<dj::map_t>())
+			{
+				dj::json_t& move = *m;
+
+				this->all_moves.push_back(
+					Move(
+						move["name"].as<std::string>(),
+						MoveType::NONE,
+						move["accuracy"].as<int>(),
+						move["effect_chance"].as<int>(),
+						move["power"].as<int>(),
+						random_choice(move["flavor_text_entries"].as<std::vector<std::string>>())
+					)
+				);
+			}
 		}
-		/* (2 * Level / 5+2) * Attack * Power) / Defense) / 50) + 2) * random number(217-255)) / 255
-			damage formula https://www.math.miami.edu/~jam/azure/compendium/battdam.htm*/
-		int damage = ((((((2 * source.m_level / 5 + 2) * attack * source.m_next_move.m_power) / target.m_def) / 50) + 2) * random_range<int>(217, 255)) / 255;
-		target.m_hp -= damage;
-
-		return source.m_next_move;
+		this->configure_move_set();
 	}
-	return Move("Failed", MoveTypes::NONE, 100, 0);
-}
-
-Move Pokemon::defend(Pokemon& source)
-{
-
-	int defense_increase = source.m_next_move.m_power * random_range<float>(0.1, 0.3);
-	source.m_def += defense_increase;
-	return source.m_next_move;
-}
-
-Move Pokemon::heal(Pokemon& source)
-{
-
-	int health_increase = source.m_next_move.m_power * random_range<float>(0.1, 0.5);
-	if (source.m_hp + health_increase > source.m_max_hp)
-	{
-		source.m_hp = source.m_max_hp;
-	}
-	else
-	{
-		source.m_hp += health_increase;
-	}
-	return source.m_next_move;
 }

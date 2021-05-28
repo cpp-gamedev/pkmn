@@ -31,7 +31,7 @@ T random_choice(const std::vector<T>& vector)
 }
 
 template <typename T>
-std::vector<T> random_choices(const std::vector<T>& vector, T k)
+std::vector<T> random_choices(const std::vector<T>& vector, std::size_t k)
 {
 	// select k random values in vector
 	std::vector<T> choices(k);
@@ -68,6 +68,14 @@ std::string style(std::string text, Color fore, Color back = Color::BLACK);
 
 std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10);
 
-bool validate_asset_dir(const std::filesystem::path& asset_dir);
-
 std::vector<std::string> read_file(const std::filesystem::path& path);
+
+struct Manifest
+{
+	Manifest() = default;
+	std::vector<std::string> files{};
+	std::vector<int> duplicates{};
+	bool game_ready{};
+};
+
+Manifest check_manifest(const std::filesystem::path& path);

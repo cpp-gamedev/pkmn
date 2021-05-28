@@ -28,32 +28,30 @@
 If this is your first time using a python script, use
 
 ```bash
-$ python -m venv venv/
-$ source venv/Scripts/activate
-$ python -m pip install --upgrade pip
-$ pip install -r requirements.txt --only-binary all
+python -m venv venv/
+source venv/Scripts/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt --only-binary all
 ```
 
 to install the dependencies in a virtual environment. Note that this script
-assumes that it is being run from the project's root directory. After that
-you should be able to use this script:
+assumes that it is being run from the project's root directory. You need to create
+at least two new pkmn file sets before you can start playing this game:
 
 ```bash
-$ # creates two new pkmn data sets (sprite + data)
-$ python gen_data.py --verbose make --id 1 4
-$ # create manifest.json
-$ python gen_data.py manifest
+# creates two new pkmns (bulbasaur and charmander)
+python gen_data.py --verbose make --id 1 4
+# creates a manifest.json
+python gen_data.py manifest
 ```
 
-You can also use the `--name` option for identifying a new pokemon. Repeat both
-steps - you need at least two pokemon to play this game. In case of doubt, use
+In case of doubt, use
 
 ```bash
-$ python gen_data.py --help
+python gen_data.py --help
 ```
 
-to get more help. Once you've obtained these files, build the project to play
-this game. Use the `--mirror` flag for your own pokemon (recommended).
+to get more help.
 
 ### On Visual Studio (Windows)
 
