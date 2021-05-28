@@ -3,11 +3,11 @@
 #include <numeric>
 #include <vector>
 #include "utils.hpp"
-#include "str_format.hpp"
-#include <dumb_json/djson.hpp>
+#include <str_format/str_format.hpp>
+#include <dumb_json/json.hpp>
 
 Move::Move(std::string name, MoveType type, int accuracy, int effect_chance, int power, std::string flavor_text)
-	: name(name), type(type), accuracy(accuracy), effect_chance(effect_chance), power(power), flavor_text(flavor_text)
+	: name(name), type(type), accuracy(accuracy), power(power), effect_chance(effect_chance), flavor_text(flavor_text)
 {
 }
 
@@ -43,28 +43,28 @@ void Pokemon::configure_move_set()
 	}
 }
 
-Pokemon::Pokemon(int id, std::filesystem::path assets_dir) : id{id}, assets_dir{assets_dir}
+Pokemon::Pokemon(int id, std::filesystem::path assets_dir) : assets_dir{assets_dir}, id{id}
 {
 	this->sprite = read_asset("txt");
 	auto lines = read_asset("json");
-	this->json = std::accumulate(lines.begin(), lines.end(), std::string(""));
-	if (auto n = dj::node_t::make(this->json))
+	this->json_str = std::accumulate(lines.begin(), lines.end(), std::string(""));
+	dj::json_t json;
+	if (json.read(this->json_str) && json.is_object())
 	{
 		// pkmn data
-		dj::node_t& node = *n;
 		this->id = id;
-		this->name = node["name"].as<std::string>();
-		this->level = node["level"].as<int>();
-		this->hp = node["hp"].as<int>();
+		this->name = json["name"].as<std::string>();
+		this->level = json["level"].as<int>();
+		this->hp = json["hp"].as<int>();
 		this->max_hp = this->hp;
-		this->atk = node["atk"].as<int>();
-		this->def = node["def"].as<int>();
+		this->atk = json["atk"].as<int>();
+		this->def = json["def"].as<int>();
 		// move data
-		if (auto moves = node.find("moves"))
+		if (auto moves = json.find("moves"))
 		{
-			for (auto const& [num, m] : moves->as<dj::map_nodes_t>())
+			for (auto const& [num, m] : moves->as<dj::map_t>())
 			{
-				dj::node_t& move = *m;
+				dj::json_t& move = *m;
 
 				this->all_moves.push_back(
 					Move(

@@ -5,7 +5,7 @@
 #include <vector>
 #include "models.hpp"
 #include "utils.hpp"
-#include "str_format.hpp"
+#include <str_format/str_format.hpp>
 
 std::vector<std::string> gen_healthbar(Pokemon& pkmn)
 {
