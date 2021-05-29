@@ -27,6 +27,7 @@ from pprint import pprint
 from random import randint, random
 from typing import List
 from urllib.parse import urljoin
+from itertools import chain
 
 import colorama
 import requests
@@ -35,13 +36,22 @@ from PIL import Image, ImageOps
 from rich.console import Console
 from rich.progress import track
 
+#region global variables
+
 __version__ = "0.0.1"
-assets = Path('assets/')
-assets.mkdir(parents=True, exist_ok=True)
-ASSETS = assets
+
+def setup() -> List[Path]:
+    assets = [Path('assets/'), Path('assets/textures'), Path('assets/data')]
+    for dir in assets:
+        dir.mkdir(parents=True, exist_ok=True)
+    return assets
+
+ASSETS, TEXTURES, DATA = setup()
 BASE_API = "https://pokeapi.co/api/v2/pokemon/"
 SPRITE_API = "https://pokeres.bastionbot.org/images/pokemon/"
 CONSOLE = Console()
+
+#endregion
 
 #region image processing
 
@@ -119,13 +129,15 @@ def req_pkmn_data(id_: int, verbose: bool) -> None:
         }
     result['moves'] = moves
 
-    with open(ASSETS.joinpath(f"{result['id']}.json"), mode='w', encoding='utf-8') as file_handler:
+    data = DATA.joinpath(f"{result['id']}.json")
+
+    with open(data, mode='w', encoding='utf-8') as file_handler:
         json.dump(result, file_handler)
 
     if verbose:
         pprint(result)
 
-    print(f"{Fore.YELLOW}Done! A new JSON file was created in {str(ASSETS)!r}.{Style.RESET_ALL}")
+    print(f"{Fore.YELLOW}Created {str(data)!r}{Style.RESET_ALL}")
 
 def gen_sprite(id_: int,  mirror: bool, verbose: bool) -> None:    
     colorama.init(autoreset=False)
@@ -139,7 +151,10 @@ def gen_sprite(id_: int,  mirror: bool, verbose: bool) -> None:
                 file_handler.write(chunk)
 
         ascii_art = img2ascii(Image.open(image_path), width=20, mirror_image=mirror)
-        with open(ASSETS.joinpath(f"{id_}.txt"), mode='w', encoding='utf-8') as file_handler:
+
+        sprite = TEXTURES.joinpath(f"{id_}.txt")
+
+        with open(sprite, mode='w', encoding='utf-8') as file_handler:
             file_handler.writelines(ascii_art)
 
         image_path.unlink(missing_ok=True)
@@ -147,14 +162,14 @@ def gen_sprite(id_: int,  mirror: bool, verbose: bool) -> None:
     if verbose:
         print(f"\n{''.join(ascii_art)}")
 
-    print(f"{Fore.YELLOW}Done! A new ASCII image was created in {str(ASSETS)!r}.{Style.RESET_ALL}")
+    print(f"{Fore.YELLOW}Created {str(sprite)!r}{Style.RESET_ALL}")
 
 def check_manifest(verbose: bool) -> None:
     extensions = ['.txt', '.json']
 
     files = list(filter(
         lambda file: file.suffix in extensions and file.stem.isnumeric(), 
-        [file for file in ASSETS.glob(r'**/*')]
+        [file for file in chain(DATA.glob(r'**/*'), TEXTURES.glob(r'**/*'))]
     ))
     
     ids = list(map(lambda file: int(file.stem), files))
@@ -190,7 +205,7 @@ def main():
     if args.command == 'make':
         for id_ in args.id:
             req_pkmn_data(id_, verbose=False)
-            gen_sprite(id_, args.mirror, args.verbose)
+            gen_sprite(id_, args.mirror, verbose=False)
     elif args.command == 'manifest':
         check_manifest(args.verbose)
     else:
