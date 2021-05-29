@@ -2,8 +2,14 @@
 
 #include<string>
 #include<vector>
+
 #include "models.hpp"
 
-std::vector<std::string> gen_healthbar(Pokemon& pkmn);
+namespace anim
+{
+std::vector<std::string> gen_healthbar(models::Pokemon& pkmn);
 
-void print_frame(Pokemon& pkmn1, Pokemon& pkmn2);
+void print_splash_screen(const std::filesystem::path& assets_dir);
+
+void print_frame(models::Pokemon& pkmn1, models::Pokemon& pkmn2);
+} // namespace anim

@@ -1,13 +1,18 @@
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
+#include <numeric>
 #include <string>
 #include <vector>
-#include "models.hpp"
-#include "utils.hpp"
+
 #include <str_format/str_format.hpp>
 
-std::vector<std::string> gen_healthbar(Pokemon& pkmn)
+#include "models.hpp"
+#include "utils.hpp"
+
+namespace anim
+{
+std::vector<std::string> gen_healthbar(models::Pokemon& pkmn)
 {
 	/*
 	 * bulbasaur :L30	// label
@@ -24,7 +29,7 @@ std::vector<std::string> gen_healthbar(Pokemon& pkmn)
 
 	std::string stars = std::string(hp_scaled, '*');
 	stars = stars.append(std::string(10 - hp_scaled, ' '));
-	Color star_color = (hp_scaled >= 5) ? Color::GREEN : (3 < hp_scaled && hp_scaled < 5) ? Color::YELLOW : Color::RED;
+	utils::Color star_color = (hp_scaled >= 5) ? utils::Color::GREEN : (3 < hp_scaled && hp_scaled < 5) ? utils::Color::YELLOW : utils::Color::RED;
 	std::string progressbar = kt::format_str("HP [{}]", style(stars, star_color));
 	progressbar = std::string(max_width - 15, ' ').append(progressbar);
 
@@ -34,7 +39,21 @@ std::vector<std::string> gen_healthbar(Pokemon& pkmn)
 	return {label, progressbar, hitpoints};
 }
 
-void print_frame(Pokemon& pkmn1, Pokemon& pkmn2)
+void print_splash_screen(const std::filesystem::path& assets_dir)
+{
+	auto logo = utils::read_file(assets_dir / std::filesystem::path("splashscreen.txt"));
+	std::cout << utils::style(std::accumulate(logo.begin(), logo.end(), std::string("")), utils::Color::YELLOW) << '\n';
+
+	std::cout << '\n' << std::string(19, ' ');
+
+	for (const char& c : "copyright (c) 2021 cpp-gamedev")
+	{
+		std::cout << c;
+		utils::sleep(100);
+	}
+}
+
+void print_frame(models::Pokemon& pkmn1, models::Pokemon& pkmn2)
 {
 	std::string healthbars{};
 	std::string sprites{};
@@ -63,3 +82,4 @@ void print_frame(Pokemon& pkmn1, Pokemon& pkmn2)
 
 	return;
 }
+} // namespace anim
