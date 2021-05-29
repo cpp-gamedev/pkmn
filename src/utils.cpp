@@ -7,10 +7,14 @@
 #include <random>
 #include <string>
 #include <thread>
-#include "utils.hpp"
+
 #include <str_format/str_format.hpp>
 #include <dumb_json/json.hpp>
 
+#include "utils.hpp"
+
+namespace utils
+{
 void clear_screen()
 {
 	std::cout << "\033[2J\033[1;1H";
@@ -91,3 +95,4 @@ Manifest check_manifest(const std::filesystem::path& path)
 
 	return manifest;
 }
+} // namespace utils

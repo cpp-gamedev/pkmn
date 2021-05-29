@@ -7,6 +7,8 @@
 #include <type_traits>
 #include <vector>
 
+namespace utils
+{
 template <typename T>
 T random_range(T min, T max)
 {
@@ -79,3 +81,4 @@ struct Manifest
 };
 
 Manifest check_manifest(const std::filesystem::path& path);
+} // namespace utils
