@@ -23,18 +23,34 @@
 
 ## Build & Debug
 
+Initialize and update all submodules after you have cloned this repository:
+
+```bash
+git submodule update --init --recursive
+```
+
+For python specifically, you may need to install `python3-venv` to create virtual
+environments on Linux.
+
 ### Generating new Pokemon
+
+---
+
+*Note: You can also use the `./easy_install.sh` script to skip this section.*
+
+---
 
 If this is your first time using a python script, use
 
 ```bash
 python -m venv venv/
-source venv/Scripts/activate
+source venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt --only-binary all
 ```
 
-to install the dependencies in a virtual environment. Note that this script
+to install the dependencies in a virtual environment. On Windows, you need to use
+`.\venv\Scripts\Activate.ps1` to activate a virtual environment. Note that this script
 assumes that it is being run from the project's root directory. You need to create
 at least two new pkmn file sets before you can start playing this game:
 
@@ -60,4 +76,7 @@ to start debugging this project (`F5`).
 
 ### On Visual Studio Code (Linux)
 
-TODO
+Useful links for first timers:
+
+- <https://cpp-gamedev.netlify.app/series/101/1_getting_started/>
+- <https://cpp-gamedev.netlify.app/series/101/2_development_environment/>
