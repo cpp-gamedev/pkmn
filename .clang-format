@@ -9,7 +9,9 @@ Standard: c++17
 TabWidth: 4
 IndentWidth: 4
 UseTab: Always
+AllowAllArgumentsOnNextLine: false
 AllowShortFunctionsOnASingleLine: false
+SortIncludes: true
 IncludeCategories:
   # Headers in <> without extension.
   - Regex:           '<([A-Za-z0-9\/-_])+>'
