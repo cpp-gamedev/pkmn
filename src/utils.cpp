@@ -38,6 +38,18 @@ std::string style(std::string text, Color fore, Color back)
 	return ansi_text.append(kt::format_str("{}\033[0m", text));
 }
 
+std::string upper(std::string& str)
+{
+	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return toupper(c); });
+	return str;
+}
+
+std::string lower(std::string& str)
+{
+	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return tolower(c); });
+	return str;
+}
+
 std::filesystem::path find_upwards(std::string dir_name, int max_depth)
 {
 	auto path = std::filesystem::current_path() / std::filesystem::path(dir_name);
@@ -72,6 +84,37 @@ std::vector<std::string> read_file(const std::filesystem::path& path)
 	return lines;
 }
 
+void print_enum_table(std::vector<std::string> table, std::string header)
+{
+	// +----------------------------------------------------------+
+	// | HEADER                                                   |
+	// | 1. table[0]                                              |
+	// | 2. table[1]                                              |
+	// | 3. table[2]                                              |
+	// +----------------------------------------------------------+
+
+	constexpr int width = 60;
+	utils::Color border_color = Color::YELLOW;
+	std::string border = utils::style(std::string("|"), border_color);
+	std::string horizontal_line = utils::style(std::string("+").append(std::string(width - 2, '-')).append("+"), border_color);
+
+	std::cout << horizontal_line << '\n';
+	std::cout << border << kt::format_str(" {}{}", upper(header), std::string(width - 3 - header.length(), ' ')) << border << '\n';
+
+	// clang-format off
+	auto padded_string = [](int i, std::string str, std::string limits) {
+		return kt::format_str("{} {}. {}{}{}", limits, i, lower(str), std::string(54 - str.length(), ' '), limits);
+	};
+	// clang-format on
+
+	for (std::size_t i = 0; i < table.size(); ++i)
+	{
+		std::cout << padded_string(i + 1, table[i], border) << '\n';
+	}
+
+	std::cout << horizontal_line << '\n';
+}
+
 Manifest check_manifest(const std::filesystem::path& path)
 {
 	Manifest manifest{};
@@ -86,6 +129,7 @@ Manifest check_manifest(const std::filesystem::path& path)
 			manifest.game_ready = json["game_ready"].as<bool>();
 			manifest.duplicates = json["duplicates"].as<std::vector<int>>();
 			manifest.files = json["files"].as<std::vector<std::string>>();
+			manifest.asset_dir = path.parent_path() / std::filesystem::path("assets");
 		}
 	}
 	else
