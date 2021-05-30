@@ -23,15 +23,18 @@ void Pokemon::configure_move_set()
 
 	for (Move& move : this->move_set)
 	{
-		if (move.power > 20 && move.accuracy > 50)
+		if (move.power >= 20 && move.accuracy > 0)
 		{
 			move.type = MoveType::ATTACK;
+			move.power += this->difficulty == Difficulty::EASY ? -20 : (this->difficulty == Difficulty::MODERATE) ? 0 : 20;
 			move.flavor_text = kt::format_str("{} deals {} points in damage.", move.name, move.power);
 		}
-		else if (move.power <= 20 && move.effect_chance >= 0)
+		else if (move.accuracy == 0)
 		{
 			move.type = utils::random_choice(std::vector<MoveType>{MoveType::BOOST_ATK, MoveType::BOOST_DEF});
-			move.flavor_text = kt::format_str("Boost your {} by 10%.", move.type == MoveType::BOOST_ATK ? "ATK" : "DEF");
+			move.accuracy = 100;
+			move.power = (this->difficulty <= Difficulty::MODERATE) ? 10 : 20;
+			move.flavor_text = kt::format_str("Boost your {} by {}%.", move.type == MoveType::BOOST_ATK ? "ATK" : "DEF", move.power);
 		}
 		else
 		{
@@ -43,7 +46,7 @@ void Pokemon::configure_move_set()
 	}
 }
 
-Pokemon::Pokemon(int id, std::filesystem::path assets_dir) : assets_dir{assets_dir}, id{id}
+Pokemon::Pokemon(int id, std::filesystem::path assets_dir, Difficulty difficulty) : assets_dir{assets_dir}, id{id}, difficulty{difficulty}
 {
 	this->sprite = read_asset("txt");
 	auto lines = read_asset("json");

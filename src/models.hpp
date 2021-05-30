@@ -27,6 +27,13 @@ struct Move
 	Move() = default;
 };
 
+enum class Difficulty
+{
+	EASY,
+	MODERATE,
+	HARD
+};
+
 struct Pokemon
 {
   private:
@@ -38,7 +45,6 @@ struct Pokemon
 
   public:
 	std::filesystem::path assets_dir{};
-
 	std::vector<std::string> sprite{};
 	int id{};
 	std::string name{};
@@ -48,7 +54,8 @@ struct Pokemon
 	int atk{};
 	int def{};
 	std::vector<Move> move_set{};
+	Difficulty difficulty{};
 
-	Pokemon(int id, std::filesystem::path assets_dir);
+	Pokemon(int id, std::filesystem::path assets_dir, Difficulty difficulty = Difficulty::MODERATE);
 };
 } // namespace models
