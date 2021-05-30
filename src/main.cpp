@@ -22,9 +22,15 @@ int main()
 		print_splash_screen(assets_dir);
 		clear_screen();
 
-		std::cout << "TODO: load main menu" << '\n';
+		auto pkmns = load_main_menu(manifest);
+		sleep(1000);
+		clear_screen();
 
 		std::cout << "TODO: init game loop" << '\n';
+		sleep(1000);
+		clear_screen();
+
+		print_frame(pkmns[0], pkmns[1]);
 
 		return EXIT_SUCCESS;
 	}
