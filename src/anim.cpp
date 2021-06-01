@@ -12,7 +12,7 @@
 
 namespace anim
 {
-std::vector<std::string> gen_healthbar(models::Pokemon& pkmn)
+std::vector<std::string> gen_healthbar(const models::Pokemon& pkmn)
 {
 	/*
 	 * bulbasaur :L30	// label
@@ -41,10 +41,10 @@ std::vector<std::string> gen_healthbar(models::Pokemon& pkmn)
 
 void print_splash_screen(const std::filesystem::path& assets_dir)
 {
-	auto logo = utils::read_file(assets_dir / std::filesystem::path("splashscreen.txt"));
+	auto logo = utils::read_file(assets_dir / "splashscreen.txt");
 	std::cout << utils::style(std::accumulate(logo.begin(), logo.end(), std::string("")), utils::Color::YELLOW) << '\n';
 
-	std::cout << '\n' << std::string(19, ' ');
+	std::cout << '\n' << std::setfill(' ') << std::setw(19);
 
 	for (const char& c : "copyright (c) 2021 cpp-gamedev")
 	{
@@ -81,7 +81,7 @@ std::vector<models::Pokemon> load_main_menu(utils::Manifest manifest)
 	return {player, pkmns.size() > 1 ? utils::random_choice(pkmns) : pkmns[0]};
 }
 
-void print_frame(models::Pokemon& pkmn1, models::Pokemon& pkmn2)
+void print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2)
 {
 	std::string healthbars{};
 	std::string sprites{};

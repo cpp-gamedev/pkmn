@@ -38,21 +38,19 @@ std::string style(std::string text, Color fore, Color back)
 	return ansi_text.append(kt::format_str("{}\033[0m", text));
 }
 
-std::string upper(std::string& str)
+void upper(std::string& str)
 {
 	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return toupper(c); });
-	return str;
 }
 
-std::string lower(std::string& str)
+void lower(std::string& str)
 {
 	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return tolower(c); });
-	return str;
 }
 
 std::filesystem::path find_upwards(std::string dir_name, int max_depth)
 {
-	auto path = std::filesystem::current_path() / std::filesystem::path(dir_name);
+	auto path = std::filesystem::current_path() / dir_name;
 
 	while (!std::filesystem::exists(path) && max_depth > 0)
 	{
@@ -99,16 +97,18 @@ void print_enum_table(std::vector<std::string> table, std::string header)
 	std::string horizontal_line = utils::style(std::string("+").append(std::string(width - 2, '-')).append("+"), border_color);
 
 	std::cout << horizontal_line << '\n';
-	std::cout << border << kt::format_str(" {}{}", upper(header), std::string(width - 3 - header.length(), ' ')) << border << '\n';
+	upper(header);
+	std::cout << border << kt::format_str(" {}{}", header, std::string(width - 3 - header.length(), ' ')) << border << '\n';
 
 	// clang-format off
 	auto padded_string = [](int i, std::string str, std::string limits) {
-		return kt::format_str("{} {}. {}{}{}", limits, i, lower(str), std::string(54 - str.length(), ' '), limits);
+		return kt::format_str("{} {}. {}{}{}", limits, i, str, std::string(54 - str.length(), ' '), limits);
 	};
 	// clang-format on
 
 	for (std::size_t i = 0; i < table.size(); ++i)
 	{
+		lower(table[i]);
 		std::cout << padded_string(i + 1, table[i], border) << '\n';
 	}
 

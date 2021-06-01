@@ -32,8 +32,8 @@ T random_range(T min, T max)
 ///
 /// \brief Return k random values in range of [min, max] (with repitition)
 ///
-template <typename T>
-std::vector<T> random_ranges(T min, T max, std::size_t k)
+template <typename T, typename U>
+std::vector<T> random_ranges(T min, T max, U k)
 {
 	std::vector<T> vector(k);
 	std::generate(vector.begin(), vector.end(), [min, max]() { return random_range(min, max); });
@@ -52,8 +52,8 @@ T random_choice(const std::vector<T>& vector)
 ///
 /// \brief Return k random elements from vector (with repitition)
 ///
-template <typename T>
-std::vector<T> random_choices(const std::vector<T>& vector, std::size_t k)
+template <typename T, typename U>
+std::vector<T> random_choices(const std::vector<T>& vector, U k)
 {
 	std::vector<T> choices(k);
 	std::generate(choices.begin(), choices.end(), [&]() { return random_choice(vector); });
@@ -87,9 +87,9 @@ enum class Color
 
 std::string style(std::string text, Color fore, Color back = Color::BLACK);
 
-std::string upper(std::string& str);
+void upper(std::string& str);
 
-std::string lower(std::string& str);
+void lower(std::string& str);
 
 std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10);
 

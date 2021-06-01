@@ -13,8 +13,7 @@ namespace models
 {
 std::vector<std::string> Pokemon::read_asset(std::string ext)
 {
-	std::filesystem::path ext_dir = (ext == "txt") ? std::filesystem::path("textures") : std::filesystem::path("data");
-	return utils::read_file(assets_dir / ext_dir / std::filesystem::path(kt::format_str("{}.{}", std::to_string(this->id), ext)));
+	return utils::read_file(assets_dir / ((ext == "txt") ? "textures" : "data") / kt::format_str("{}.{}", std::to_string(this->id), ext));
 }
 
 void Pokemon::configure_move_set()

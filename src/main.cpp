@@ -15,7 +15,7 @@ using namespace utils;
 int main()
 {
 	const auto assets_dir = find_upwards("assets");
-	Manifest manifest = check_manifest(assets_dir.parent_path() / std::filesystem::path("manifest.json"));
+	Manifest manifest = check_manifest(assets_dir.parent_path() / "manifest.json");
 
 	if (std::filesystem::exists(assets_dir) && manifest.game_ready)
 	{
@@ -36,7 +36,7 @@ int main()
 	}
 	else
 	{
-		std::cerr << "Error!" << '\n';
+		std::cerr << "Error: The assets directory is in an invalid state. Consult the README for further instructions." << '\n';
 		return EXIT_FAILURE;
 	}
 }
