@@ -2,8 +2,11 @@
 
 #include <random>
 #include <vector>
+
 #include "utils.hpp"
 
+namespace models
+{
 enum class MoveType
 {
 	NONE,
@@ -22,7 +25,13 @@ struct Move
 	int effect_chance{};
 	std::string flavor_text{};
 	Move() = default;
-	Move(std::string name, MoveType move_type, int accuracy, int effect_chance, int power, std::string flavor_text);
+};
+
+enum class Difficulty
+{
+	EASY,
+	MODERATE,
+	HARD
 };
 
 struct Pokemon
@@ -30,13 +39,12 @@ struct Pokemon
   private:
 	std::vector<std::string> read_asset(std::string ext);
 	void configure_move_set();
-	
+
 	std::string json_str{};
 	std::vector<Move> all_moves{};
 
   public:
 	std::filesystem::path assets_dir{};
-
 	std::vector<std::string> sprite{};
 	int id{};
 	std::string name{};
@@ -46,6 +54,8 @@ struct Pokemon
 	int atk{};
 	int def{};
 	std::vector<Move> move_set{};
+	Difficulty difficulty{};
 
-	Pokemon(int id, std::filesystem::path assets_dir);
+	Pokemon(int id, std::filesystem::path assets_dir, Difficulty difficulty = Difficulty::MODERATE);
 };
+} // namespace models

@@ -367,7 +367,8 @@ FodyWeavers.xsd
 venv/
 
 # project-specific files and directories
-assets/
+assets/textures/*.txt
+assets/data/*.json
 manifest.json
 
 # VSCode, clangd etc
