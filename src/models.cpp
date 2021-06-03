@@ -22,6 +22,8 @@ void Pokemon::configure_move_set()
 
 	for (Move& move : this->move_set)
 	{
+		// NOTE: flavor_text can never be longer than 54 chars, or else it breaks the table formatting in print_move_table @anim.cpp
+
 		if (move.power >= 20 && move.accuracy > 0)
 		{
 			move.type = MoveType::ATTACK;
