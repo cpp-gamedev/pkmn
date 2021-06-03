@@ -53,12 +53,47 @@ void print_splash_screen(const std::filesystem::path& assets_dir)
 	}
 }
 
-std::vector<models::Pokemon> load_main_menu(utils::Manifest manifest)
+void print_move_table(const models::Pokemon& pkmn)
+{
+	// +----------------------------------------------------------+
+	// |    MOVE                                POWER    ACCURACY |
+	// | 1. move1                                 100          90 |
+	// |    first move description                                |
+	// | 2. move2                                  90          50 |
+	// |    second move description                               |
+	// | 3. move3                                 120          10 |
+	// |    third move description                                |
+	// | 4. move4                                  30          70 |
+	// |    fourth move description                               |
+	// +----------------------------------------------------------+
+
+	constexpr int width = 60;
+	utils::Color border_color = utils::Color::YELLOW;
+	std::string border = utils::style(std::string("|"), border_color);
+	std::string horizontal_line = utils::style(std::string("+").append(std::string(width - 2, '-')).append("+"), border_color);
+
+	std::cout << horizontal_line << '\n';
+	std::cout << border << std::string(4, ' ') << "MOVE" << std::string(32, ' ') << "POWER" << std::string(4, ' ') << "ACCURACY" << ' ' << border << '\n';
+
+	for (std::size_t i = 0; i < pkmn.move_set.size(); ++i)
+	{
+		// move data
+		std::string name = kt::format_str("{}. {}", i + 1, pkmn.move_set[i].name);
+		std::cout << border << ' ' << utils::style(name, utils::Color::GREEN) << std::setfill(' ') << std::setw(width - 7 - name.length())
+				  << utils::style(std::to_string(pkmn.move_set[i].power), utils::Color::RED) << std::setfill(' ') << std::setw(21)
+				  << utils::style(std::to_string(pkmn.move_set[i].accuracy), utils::Color::CYAN) << ' ' << border << '\n';
+		// flavor text
+		std::cout << border << std::string(4, ' ') << pkmn.move_set[i].flavor_text << std::setfill(' ') << std::setw(width + 4 - pkmn.move_set[i].flavor_text.length())
+				  << border << '\n';
+	}
+
+	std::cout << horizontal_line << '\n';
+}
+
+std::vector<models::Pokemon> load_main_menu(const utils::Manifest& manifest)
 {
 	// 1. set difficulty
-	int selection{};
-	utils::print_enum_table({"easy", "moderate", "hard"}, "difficulty");
-	selection = utils::get_user_input<int>(">>> ");
+	int selection{utils::validate_user_input({"easy", "moderate", "hard"}, "(1/2) set difficulty")};
 	auto difficulty = (selection == 1) ? models::Difficulty::EASY : (selection == 2) ? models::Difficulty::MODERATE : models::Difficulty::HARD;
 
 	// 2. instantiate all available pokemons
@@ -71,13 +106,11 @@ std::vector<models::Pokemon> load_main_menu(utils::Manifest manifest)
 	std::vector<std::string> names{};
 	names.reserve(pkmns.size());
 	std::for_each(pkmns.begin(), pkmns.end(), [&names](models::Pokemon& pkmn) { names.push_back(pkmn.name); });
-	utils::print_enum_table(names, "pokemons");
-	selection = utils::get_user_input<int>(">>> ");
+	selection = utils::validate_user_input(names, "(2/2) choose a pokemon");
 	models::Pokemon player = pkmns[selection - 1];
 
 	// 4. remove selection from pkmns, so that player won't fight against his doppelganger
 	pkmns.erase(std::remove_if(pkmns.begin(), pkmns.end(), [player](models::Pokemon pkmn) { return player.id == pkmn.id; }), pkmns.end());
-
 	return {player, pkmns.size() > 1 ? utils::random_choice(pkmns) : pkmns[0]};
 }
 
@@ -108,6 +141,6 @@ void print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2)
 
 	std::cout << sprites;
 
-	return;
+	print_move_table(pkmn1);
 }
 } // namespace anim
