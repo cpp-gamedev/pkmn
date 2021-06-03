@@ -15,5 +15,5 @@ void print_move_table(const models::Pokemon& pkmn);
 
 std::vector<models::Pokemon> load_main_menu(const utils::Manifest& manifest);
 
-void print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2);
+int print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2);
 } // namespace anim

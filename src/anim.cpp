@@ -114,7 +114,7 @@ std::vector<models::Pokemon> load_main_menu(const utils::Manifest& manifest)
 	return {player, pkmns.size() > 1 ? utils::random_choice(pkmns) : pkmns[0]};
 }
 
-void print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2)
+int print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2)
 {
 	std::string healthbars{};
 	std::string sprites{};
@@ -127,11 +127,11 @@ void print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2)
 	if (padding > 30)
 		padding -= 2 * (padding - 30);
 
+	// gather healthbars
 	for (std::size_t i = 0; i < 3; i++)
 		healthbars.append(healthbar1[i]).append(std::string(padding, ' ')).append(healthbar2[i]).append("\n");
 
-	std::cout << healthbars;
-
+	// gather sprites
 	for (std::size_t i = 0; i < 20; i++)
 	{
 		std::string tmp = pkmn1.sprite[i]; // strip new line
@@ -139,8 +139,22 @@ void print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2)
 		sprites.append(tmp).append(std::string(20, ' ')).append(pkmn2.sprite[i]);
 	}
 
-	std::cout << sprites;
+	int answer{};
+	std::vector<int> choices(pkmn1.move_set.size());
+	std::iota(choices.begin(), choices.end(), 1);
 
-	print_move_table(pkmn1);
+	// read and return user-selected move
+	while (std::find(choices.begin(), choices.end(), answer) == choices.end())
+	{
+		utils::clear_screen();
+		std::cout << healthbars;
+		std::cout << sprites;
+		print_move_table(pkmn1);
+		answer = utils::get_user_input<int>(">>> ");
+		std::cin.clear();
+		std::cin.ignore(utils::str_max, '\n');
+	}
+
+	return answer;
 }
 } // namespace anim
