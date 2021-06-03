@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <fstream>
 #include <filesystem>
 #include <iostream>
 #include <numeric>
@@ -114,6 +115,24 @@ void print_enum_table(std::vector<std::string> table, std::string header)
 
 	std::cout << horizontal_line << '\n';
 }
+
+int validate_user_input(std::vector<std::string> table, std::string header)
+{
+	int answer{};
+	std::vector<int> choices(table.size());
+	std::iota(choices.begin(), choices.end(), 1);
+
+	while (std::find(choices.begin(), choices.end(), answer) == choices.end())
+	{
+		clear_screen();
+		print_enum_table(table, header);
+		answer = get_user_input<int>(">>> ");
+		std::cin.clear();
+		std::cin.ignore(str_max, '\n');
+	}
+
+	return answer;
+ }
 
 Manifest check_manifest(const std::filesystem::path& path)
 {

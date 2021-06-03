@@ -2,13 +2,17 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <functional>
 #include <iostream>
+#include <limits>
+#include <numeric>
 #include <random>
 #include <type_traits>
 #include <vector>
 
 namespace utils
 {
+static constexpr long long str_max{std::numeric_limits<std::streamsize>::max()};
 ///
 /// \brief Return a random value in range of [min, max]
 ///
@@ -96,6 +100,8 @@ std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10);
 std::vector<std::string> read_file(const std::filesystem::path& path);
 
 void print_enum_table(std::vector<std::string> table, std::string header);
+
+int validate_user_input(std::vector<std::string> table, std::string header);
 
 struct Manifest
 {
