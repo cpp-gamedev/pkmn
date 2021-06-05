@@ -1,10 +1,3 @@
-#include <algorithm>
-#include <filesystem>
-#include <iostream>
-#include <numeric>
-#include <string>
-#include <vector>
-
 #include <str_format/str_format.hpp>
 
 #include "models.hpp"
@@ -77,7 +70,7 @@ void print_move_table(const models::Pokemon& pkmn)
 
 	for (std::size_t i = 0; i < pkmn.move_set.size(); ++i)
 	{
-		// move data
+		// move name, power and accuracy
 		std::string name = kt::format_str("{}. {}", i + 1, pkmn.move_set[i].name);
 		std::cout << border << ' ' << utils::style(name, utils::Color::GREEN) << std::setfill(' ') << std::setw(width - 7 - name.length())
 				  << utils::style(std::to_string(pkmn.move_set[i].power), utils::Color::RED) << std::setfill(' ') << std::setw(21)
