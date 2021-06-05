@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <functional>
 #include <iostream>
 #include <limits>
 #include <numeric>
@@ -76,6 +75,8 @@ T get_user_input(std::string prompt)
 void clear_screen();
 
 void sleep(int ms);
+
+void slow_print(std::string str, int ms);
 
 enum class Color
 {

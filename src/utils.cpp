@@ -1,12 +1,4 @@
-#include <algorithm>
-#include <chrono>
 #include <fstream>
-#include <fstream>
-#include <filesystem>
-#include <iostream>
-#include <numeric>
-#include <random>
-#include <string>
 #include <thread>
 
 #include <str_format/str_format.hpp>
@@ -24,6 +16,17 @@ void clear_screen()
 void sleep(int ms)
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+void slow_print(std::string str, int ms)
+{
+	for (const char& c : str)
+	{
+		std::cout << c;
+		sleep(ms);
+	}
+
+	std::cout << '\n';
 }
 
 std::string style(std::string text, Color fore, Color back)
