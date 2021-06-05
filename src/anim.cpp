@@ -1,5 +1,7 @@
 #include <str_format/str_format.hpp>
 
+#include <array>
+
 #include "models.hpp"
 #include "utils.hpp"
 
@@ -83,7 +85,7 @@ void print_move_table(const models::Pokemon& pkmn)
 	std::cout << horizontal_line << '\n';
 }
 
-std::vector<models::Pokemon> load_main_menu(const utils::Manifest& manifest)
+std::array<models::Pokemon, 2> load_main_menu(const utils::Manifest& manifest)
 {
 	// 1. set difficulty
 	int selection{utils::validate_user_input({"easy", "moderate", "hard"}, "(1/2) set difficulty")};

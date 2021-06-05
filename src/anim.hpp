@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include<string>
 #include<vector>
 
@@ -13,7 +14,7 @@ void print_splash_screen(const std::filesystem::path& assets_dir);
 
 void print_move_table(const models::Pokemon& pkmn);
 
-std::vector<models::Pokemon> load_main_menu(const utils::Manifest& manifest);
+std::array<models::Pokemon, 2> load_main_menu(const utils::Manifest& manifest);
 
 int print_frame(const models::Pokemon& pkmn1, const models::Pokemon& pkmn2);
 } // namespace anim
