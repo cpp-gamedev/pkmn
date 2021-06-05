@@ -104,8 +104,10 @@ void Pokemon::make_move(Pokemon& pkmn, std::size_t index)
 	case MoveType::ATTACK:
 		if (utils::random_range<int>(0, 100) <= move.accuracy)
 		{
-			pkmn.hp -= std::ceil(move.power * (this->atk * 100) / (100 * pkmn.def));
-			msg = kt::format_str("{} used {}!", this->name, move.name);
+			int damage = std::ceil(move.power * (this->atk * 100) / (100 * pkmn.def));
+			pkmn.hp -= damage;
+			pkmn.hp = (pkmn.hp < 0) ? 0 : pkmn.hp;
+			msg = kt::format_str("{} used {} and inflicts {} points in damage!", this->name, move.name, damage);
 		}
 		else
 		{
