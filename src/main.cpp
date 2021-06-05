@@ -16,14 +16,12 @@ int main()
 		print_splash_screen(assets_dir);
 		clear_screen();
 
-		auto pkmns = load_main_menu(manifest);
-		auto& [player, ai] = pkmns;
+		auto& [player, ai] = load_main_menu(manifest);
 		clear_screen();
 
 		while (player.hp > 0 && ai.hp > 0)
 		{
-			int move_index = print_frame(player, ai);
-			player.make_move(ai, move_index);
+			player.make_move(ai, print_frame(player, ai));
 
 			if (ai.hp > 0)
 			{
