@@ -131,6 +131,6 @@ void Pokemon::make_move(Pokemon& pkmn, std::size_t index)
 		break;
 	}
 
-	utils::slow_print(msg, 50);
+	utils::slow_print(msg, std::chrono::milliseconds{50});
 }
 } // namespace models

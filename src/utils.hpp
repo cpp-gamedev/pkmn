@@ -74,9 +74,9 @@ T get_user_input(std::string prompt)
 
 void clear_screen();
 
-void sleep(int ms);
+void sleep(std::chrono::milliseconds ms);
 
-void slow_print(std::string str, int ms);
+void slow_print(const std::string& str, std::chrono::milliseconds ms);
 
 enum class Color
 {
@@ -100,7 +100,7 @@ std::filesystem::path find_upwards(std::string dir_name, int max_depth = 10);
 
 std::vector<std::string> read_file(const std::filesystem::path& path);
 
-void print_enum_table(std::vector<std::string> table, std::string header);
+void print_enum_table(const std::vector<std::string>& table, const std::string& header);
 
 int validate_user_input(std::vector<std::string> table, std::string header);
 

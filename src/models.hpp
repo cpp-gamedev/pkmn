@@ -29,9 +29,10 @@ struct Move
 
 enum class Difficulty
 {
-	EASY = 1,
-	MODERATE = 2,
-	HARD = 3
+	NONE,
+	EASY,
+	MODERATE,
+	HARD
 };
 
 struct Pokemon

@@ -13,14 +13,14 @@ void clear_screen()
 	std::cout << "\033[2J\033[1;1H";
 }
 
-void sleep(int ms)
+void sleep(std::chrono::milliseconds ms)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+	std::this_thread::sleep_for(ms);
 }
 
-void slow_print(std::string str, int ms)
+void slow_print(const std::string& str, std::chrono::milliseconds ms)
 {
-	for (const char& c : str)
+	for (char c : str)
 	{
 		std::cout << c;
 		sleep(ms);
@@ -86,7 +86,7 @@ std::vector<std::string> read_file(const std::filesystem::path& path)
 	return lines;
 }
 
-void print_enum_table(std::vector<std::string> table, std::string header)
+void print_enum_table(const std::vector<std::string>& table, const std::string& header)
 {
 	// +----------------------------------------------------------+
 	// | HEADER                                                   |
@@ -101,7 +101,6 @@ void print_enum_table(std::vector<std::string> table, std::string header)
 	std::string horizontal_line = utils::style(std::string("+").append(std::string(width - 2, '-')).append("+"), border_color);
 
 	std::cout << horizontal_line << '\n';
-	upper(header);
 	std::cout << border << kt::format_str(" {}{}", header, std::string(width - 3 - header.length(), ' ')) << border << '\n';
 
 	// clang-format off
@@ -112,7 +111,6 @@ void print_enum_table(std::vector<std::string> table, std::string header)
 
 	for (std::size_t i = 0; i < table.size(); ++i)
 	{
-		lower(table[i]);
 		std::cout << padded_string(i + 1, table[i], border) << '\n';
 	}
 
@@ -151,7 +149,7 @@ Manifest check_manifest(const std::filesystem::path& path)
 			manifest.game_ready = json["game_ready"].as<bool>();
 			manifest.duplicates = json["duplicates"].as<std::vector<int>>();
 			manifest.files = json["files"].as<std::vector<std::string>>();
-			manifest.asset_dir = path.parent_path() / std::filesystem::path("assets");
+			manifest.asset_dir = path.parent_path() / "assets";
 		}
 	}
 	else

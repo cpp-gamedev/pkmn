@@ -44,7 +44,7 @@ void print_splash_screen(const std::filesystem::path& assets_dir)
 	for (const char& c : "copyright (c) 2021 cpp-gamedev")
 	{
 		std::cout << c;
-		utils::sleep(100);
+		utils::sleep(std::chrono::milliseconds{50});
 	}
 }
 
@@ -88,7 +88,7 @@ void print_move_table(const models::Pokemon& pkmn)
 std::array<models::Pokemon, 2> load_main_menu(const utils::Manifest& manifest)
 {
 	// 1. set difficulty
-	int selection{utils::validate_user_input({"easy", "moderate", "hard"}, "(1/2) set difficulty")};
+	int selection{utils::validate_user_input({"easy", "moderate", "hard"}, "(1/2) SET DIFFICULTY")};
 	auto difficulty = (selection == 1) ? models::Difficulty::EASY : (selection == 2) ? models::Difficulty::MODERATE : models::Difficulty::HARD;
 
 	// 2. instantiate all available pokemons
@@ -101,7 +101,7 @@ std::array<models::Pokemon, 2> load_main_menu(const utils::Manifest& manifest)
 	std::vector<std::string> names{};
 	names.reserve(pkmns.size());
 	std::for_each(pkmns.begin(), pkmns.end(), [&names](models::Pokemon& pkmn) { names.push_back(pkmn.name); });
-	selection = utils::validate_user_input(names, "(2/2) choose a pokemon");
+	selection = utils::validate_user_input(names, "(2/2) CHOOSE A POKEMON");
 	models::Pokemon player = pkmns[selection - 1];
 
 	// 4. remove selection from pkmns, so that player won't fight against his doppelganger

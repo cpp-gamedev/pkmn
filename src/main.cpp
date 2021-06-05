@@ -8,6 +8,7 @@ using namespace utils;
 
 int main()
 {
+	constexpr std::chrono::milliseconds delay{1000};
 	const auto assets_dir = find_upwards("assets");
 	Manifest manifest = check_manifest(assets_dir.parent_path() / "manifest.json");
 
@@ -26,7 +27,7 @@ int main()
 
 			if (ai.hp > 0)
 			{
-				sleep(1000);
+				sleep(delay);
 				ai.make_move(player, random_range<std::size_t>(1, 4));
 				clear_screen();
 			}
@@ -34,7 +35,7 @@ int main()
 		}
 
 		clear_screen();
-		slow_print((ai.hp == 0) ? "You Won :)" : "You Lost :(", 50);
+		slow_print((ai.hp == 0) ? "You Won :)" : "You Lost :(", delay / 20);
 
 		return EXIT_SUCCESS;
 	}
