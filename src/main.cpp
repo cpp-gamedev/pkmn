@@ -1,9 +1,3 @@
-#include <algorithm>
-#include <filesystem>
-#include <iostream>
-#include <numeric>
-#include <string>
-
 #include "anim.hpp"
 #include "models.hpp"
 #include "utils.hpp"
@@ -23,14 +17,25 @@ int main()
 		clear_screen();
 
 		auto pkmns = load_main_menu(manifest);
-		sleep(1000);
+		auto& [player, ai] = pkmns;
 		clear_screen();
 
-		std::cout << "TODO: init game loop" << '\n';
-		sleep(1000);
-		clear_screen();
+		while (player.hp > 0 && ai.hp > 0)
+		{
+			int move_index = print_frame(player, ai);
+			player.make_move(ai, move_index);
 
-		print_frame(pkmns[0], pkmns[1]);
+			if (ai.hp > 0)
+			{
+				sleep(1000);
+				ai.make_move(player, random_range<std::size_t>(1, 4));
+				clear_screen();
+			}
+
+		}
+
+		clear_screen();
+		slow_print((ai.hp == 0) ? "You Won :)" : "You Lost :(", 50);
 
 		return EXIT_SUCCESS;
 	}
