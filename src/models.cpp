@@ -1,7 +1,3 @@
-#include <algorithm>
-#include <numeric>
-#include <vector>
-
 #include <str_format/str_format.hpp>
 #include <dumb_json/json.hpp>
 
@@ -58,8 +54,8 @@ void Pokemon::configure_move_set()
 Pokemon::Pokemon(int id, std::filesystem::path assets_dir, Difficulty difficulty) : assets_dir{assets_dir}, id{id}, difficulty{difficulty}
 {
 	// base level ranges
-	int min = 15;
-	int max = 33;
+	constexpr int min = 15;
+	constexpr int max = 33;
 
 	this->sprite = read_asset("txt");
 	auto lines = read_asset("json");
@@ -96,5 +92,43 @@ Pokemon::Pokemon(int id, std::filesystem::path assets_dir, Difficulty difficulty
 		}
 		this->configure_move_set();
 	}
+}
+
+void Pokemon::make_move(Pokemon& pkmn, std::size_t index)
+{
+	std::string msg{};
+	const Move& move = this->move_set[index - 1];
+
+	switch (move.type)
+	{
+	case MoveType::ATTACK:
+		if (utils::random_range<int>(0, 100) <= move.accuracy)
+		{
+			pkmn.hp -= std::ceil(move.power * (this->atk * 100) / (100 * pkmn.def));
+			msg = kt::format_str("{} used {}!", this->name, move.name);
+		}
+		else
+		{
+			msg = kt::format_str("{} missed his target!", this->name);
+		}
+		break;
+	case MoveType::HEAL:
+		this->hp += move.power;
+		this->hp = (this->hp > this->max_hp) ? this->max_hp : this->hp;
+		msg = kt::format_str("{} increased his HP by {} points", this->name, move.power);
+		break;
+	case MoveType::BOOST_ATK:
+		this->atk += move.power;
+		msg = kt::format_str("{} increased his ATTACK by {}%!", this->name, move.power);
+		break;
+	case MoveType::BOOST_DEF:
+		this->def += move.power;
+		msg = kt::format_str("{} increased his DEFENSE by {}%!", this->name, move.power);
+		break;
+	default:
+		break;
+	}
+
+	utils::slow_print(msg, 50);
 }
 } // namespace models
