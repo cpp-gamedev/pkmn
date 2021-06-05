@@ -16,7 +16,8 @@ int main()
 		print_splash_screen(assets_dir);
 		clear_screen();
 
-		auto& [player, ai] = load_main_menu(manifest);
+		auto pkmns = load_main_menu(manifest);
+		auto& [player, ai] = pkmns;
 		clear_screen();
 
 		while (player.hp > 0 && ai.hp > 0)
