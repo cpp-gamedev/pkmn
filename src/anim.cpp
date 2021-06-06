@@ -41,11 +41,7 @@ void print_splash_screen(const std::filesystem::path& assets_dir)
 
 	std::cout << '\n' << std::setfill(' ') << std::setw(19);
 
-	for (const char& c : "copyright (c) 2021 cpp-gamedev")
-	{
-		std::cout << c;
-		utils::sleep(std::chrono::milliseconds{50});
-	}
+	utils::slow_print("copyright (c) 2021 cpp-gamedev", std::chrono::milliseconds{50});
 }
 
 void print_move_table(const models::Pokemon& pkmn)

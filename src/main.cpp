@@ -2,13 +2,14 @@
 #include "models.hpp"
 #include "utils.hpp"
 
+using namespace std::chrono_literals;
+
 using namespace anim;
 using namespace models;
 using namespace utils;
 
 int main()
 {
-	constexpr std::chrono::milliseconds delay{1000};
 	const auto assets_dir = find_upwards("assets");
 	Manifest manifest = check_manifest(assets_dir.parent_path() / "manifest.json");
 
@@ -27,15 +28,14 @@ int main()
 
 			if (ai.hp > 0)
 			{
-				sleep(delay);
+				sleep(1000ms);
 				ai.make_move(player, random_range<std::size_t>(1, 4));
 				clear_screen();
 			}
-
 		}
 
 		clear_screen();
-		slow_print((ai.hp == 0) ? "You Won :)" : "You Lost :(", delay / 20);
+		slow_print((ai.hp == 0) ? "You Won :)" : "You Lost :(", 50ms);
 
 		return EXIT_SUCCESS;
 	}
