@@ -29,6 +29,7 @@ struct Move
 
 enum class Difficulty
 {
+	NONE,
 	EASY,
 	MODERATE,
 	HARD
@@ -57,5 +58,7 @@ struct Pokemon
 	Difficulty difficulty{};
 
 	Pokemon(int id, std::filesystem::path assets_dir, Difficulty difficulty = Difficulty::MODERATE);
+
+	void make_move(Pokemon& pkmn, std::size_t index);
 };
 } // namespace models
