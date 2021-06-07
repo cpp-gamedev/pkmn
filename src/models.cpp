@@ -30,6 +30,7 @@ void Pokemon::configure_move_set()
 		if (move.power > 0 && move.accuracy > 0)
 		{
 			move.type = MoveType::ATTACK;
+			move.accuracy = utils::random_range<int>(this->difficulty == Difficulty::EASY ? 5 : (this->difficulty == Difficulty::MODERATE) ? 6 : 7, 10) * 10;
 			move.power += this->difficulty == Difficulty::EASY ? -20 : (this->difficulty == Difficulty::MODERATE) ? 0 : 20;
 			move.power = abs(move.power);
 			move.flavor_text = kt::format_str("{} deals {} points in damage.", move.name, move.power);
@@ -107,30 +108,30 @@ void Pokemon::make_move(Pokemon& pkmn, std::size_t index)
 			int damage = std::ceil(move.power * (this->atk * 100) / (100 * pkmn.def));
 			pkmn.hp -= damage;
 			pkmn.hp = (pkmn.hp < 0) ? 0 : pkmn.hp;
-			msg = kt::format_str("{} used {} and inflicts {} points in damage!", this->name, move.name, damage);
+			msg = kt::format_str("{} uses {}! and inflicts {} points in damage!", this->name, move.name, damage);
 		}
 		else
 		{
-			msg = kt::format_str("{} missed his target!", this->name);
+			msg = kt::format_str("{} uses {}! The ATTACK missed its target!", this->name, move.name);
 		}
 		break;
 	case MoveType::HEAL:
 		this->hp += move.power;
 		this->hp = (this->hp > this->max_hp) ? this->max_hp : this->hp;
-		msg = kt::format_str("{} increased his HP by {} points", this->name, move.power);
+		msg = kt::format_str("{} increased its HP by {} points", this->name, move.power);
 		break;
 	case MoveType::BOOST_ATK:
 		this->atk += move.power;
-		msg = kt::format_str("{} increased his ATTACK by {}%!", this->name, move.power);
+		msg = kt::format_str("{} increased its ATTACK by {}%!", this->name, move.power);
 		break;
 	case MoveType::BOOST_DEF:
 		this->def += move.power;
-		msg = kt::format_str("{} increased his DEFENSE by {}%!", this->name, move.power);
+		msg = kt::format_str("{} increased its DEFENSE by {}%!", this->name, move.power);
 		break;
 	default:
 		break;
 	}
 
-	utils::slow_print(msg, std::chrono::milliseconds{50});
+	utils::delayed_print(msg, std::chrono::milliseconds{25});
 }
 } // namespace models

@@ -76,7 +76,7 @@ void clear_screen();
 
 void sleep(std::chrono::milliseconds ms);
 
-void slow_print(const std::string& str, std::chrono::milliseconds ms);
+void delayed_print(std::string_view msg, std::chrono::milliseconds ms);
 
 enum class Color
 {

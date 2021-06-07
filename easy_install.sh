@@ -25,7 +25,6 @@ fi
 python3 gen_data.py --verbose make --id $id1 $id2
 python3 gen_data.py manifest
 
-echo "Updating submodules . . ."
-git submodule update --init --recursive
-
 echo "Done!"
+
+deactivate # virtual environment

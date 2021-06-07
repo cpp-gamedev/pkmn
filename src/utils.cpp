@@ -18,11 +18,11 @@ void sleep(std::chrono::milliseconds ms)
 	std::this_thread::sleep_for(ms);
 }
 
-void slow_print(const std::string& str, std::chrono::milliseconds ms)
+void delayed_print(std::string_view msg, std::chrono::milliseconds ms)
 {
-	for (char c : str)
+	for (char c : msg)
 	{
-		std::cout << c;
+		std::cout << c << std::flush;
 		sleep(ms);
 	}
 
