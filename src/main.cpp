@@ -20,22 +20,21 @@ int main()
 
 		auto pkmns = load_main_menu(manifest);
 		auto& [player, ai] = pkmns;
-		clear_screen();
 
 		while (player.hp > 0 && ai.hp > 0)
 		{
+			clear_screen();
 			player.make_move(ai, print_frame(player, ai));
 
 			if (ai.hp > 0)
 			{
 				sleep(1000ms);
 				ai.make_move(player, random_range<std::size_t>(1, 4));
-				clear_screen();
 			}
 		}
 
-		clear_screen();
-		slow_print((ai.hp == 0) ? "You Won :)" : "You Lost :(", 50ms);
+		std::cout << '\n';
+		delayed_print((ai.hp == 0) ? "You Won :)" : "You Lost :(", 50ms);
 
 		return EXIT_SUCCESS;
 	}
