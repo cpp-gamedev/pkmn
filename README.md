@@ -21,7 +21,20 @@
     </a>
 </p>
 
-## Build & Debug
+## For Users: Playing the Game
+
+Go to [Releases](https://github.com/cpp-gamedev/pkmn/releases) and download the
+latest version of `pkmn-x64-linux-windows-v1.0.0-*.zip`. Unzip this directory, then
+
+- run `easy_install.sh` (Linux)
+- run `EasyInstall.ps1` (Windows)
+
+to configure the game. This process may take a minute or two depending on your
+internet connection. After that, run the `pkmn` binary (`pkmn.exe` on Windows)
+to start the game. The game takes up quite a bit of vertical space, so you may
+want to adjust the size of your terminal.
+
+## For Developers: Build & Debug the Game
 
 Initialize and update all submodules after you have cloned this repository:
 
@@ -33,12 +46,6 @@ For python specifically, you may need to install `python3-venv` to create virtua
 environments on Linux.
 
 ### Generating new Pokemon
-
----
-
-*Note: You can also use the `./easy_install.sh` script to skip this section.*
-
----
 
 If this is your first time using a python script, use
 
