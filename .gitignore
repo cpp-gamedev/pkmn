@@ -371,6 +371,9 @@ assets/textures/*.txt
 assets/data/*.json
 manifest.json
 
+# VS
+CMakeSettings.json
+
 # VSCode, clangd etc
 .vscode/
 .cache/
